@@ -8,6 +8,8 @@ src\eeprom.c
 
 src\gpio_func.c
 
+src\obc_comm.c
+
 src\peripheral_init.c
 
 src\uart_func.c

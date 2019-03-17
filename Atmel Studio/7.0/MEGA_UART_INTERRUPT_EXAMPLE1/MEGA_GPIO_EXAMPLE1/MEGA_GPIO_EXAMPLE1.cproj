@@ -227,6 +227,9 @@
     <Compile Include="src\gpio_func.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\obc_comm.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\peripheral_init.c">
       <SubType>compile</SubType>
     </Compile>
