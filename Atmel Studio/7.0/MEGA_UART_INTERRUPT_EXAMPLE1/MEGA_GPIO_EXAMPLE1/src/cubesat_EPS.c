@@ -37,6 +37,7 @@
 #include "uart_func.h"
 #include "gpio_func.h"
 #include "eeprom.h"
+#include "obc_comm.h"
 
 /*========================================================================================*/
 // Author: Chris Thomas
@@ -44,44 +45,16 @@
 // Description: Defining Parameters and Variables
 /*========================================================================================*/
 
-#define MAX_ADC 4
 
 // POST Launch Bits
 int p = 0;
 
 // Telemetry information storage
-uint16_t telem[16];
-
-// Power State Matrix
-
-
-/*========================================================================================*/
-// Author: Chris Thomas
-// Date: 2019-02-03
-// Description: Gather Telemetry Information for OBC
-/*========================================================================================*/
-
-uint16_t* Check_TELEM(){
-	
-	int i = 0;
-	while (i < MAX_ADC) {
-		if (i > 0){
-			Change_ADC(i);
-			telem[i] = Read_ADC();
-			i++;
-		}
-		else{
-			ADMUX = 0x00;
-			telem[i] = Read_ADC();
-			i++;
-		}	
-	}
-	return telem;
-}
+float telem[16];
 
 ISR(TIMER1_COMPA_vect){
 	
-	Check_TELEM();
+	Update_TELEM();
 		
 }
 

@@ -24,6 +24,8 @@
 #include <float.h>
 
 /*========================================================================================*/
+// Function: Change_ADC
+//
 // Author: Chris Thomas
 // Date: 2019-01-15
 // Description: Change ADC_MUX to read next value
@@ -40,6 +42,8 @@ void Change_ADC(int i){
 }
 
 /*========================================================================================*/
+// Function: Read_ADC
+//
 // Author: Chris Thomas
 // Date: 2019-01-22
 // Description: Read a value from the ADC data register
@@ -57,6 +61,8 @@ uint16_t Read_ADC(){
 }
 
 /*========================================================================================*/
+// Function: Check_ADC
+//
 // Author: Chris Thomas
 // Date: 2019-03-06
 // Description: Checks the desired ADC Channel
@@ -73,6 +79,8 @@ double Check_ADC(int i){
 }
 
 /*========================================================================================*/
+// Function: Volt_ADC
+//
 // Author: Chris Thomas
 // Date: 2019-03-06
 // Description: Voltage Measurements via ADC.
@@ -110,14 +118,16 @@ double Volt_ADC(int Volt_num){
 }
 
 /*========================================================================================*/
+// Function: Amp_ADC
+//
 // Author: Chris Thomas
 // Date: 2019-03-06
 // Description: Ammeter measurements via ADC.
 /*========================================================================================*/
 
-double Amp_ADC(int Amp_num){
+float Amp_ADC(int Amp_num){
 	int ADC_num = 0; // initialize ADC number to check
-	double val = 0; // initialize the voltage value to 0 V
+	float val = 0; // initialize the voltage value to 0 V
 	int i = 0;
 	
 	if(Amp_num < 4){
@@ -138,3 +148,16 @@ double Amp_ADC(int Amp_num){
 	}
 	return val;
 }
+
+/*========================================================================================*/
+// Function: Temp_ADC
+//
+// Author: Chris Thomas
+// Date: 2019-03-17
+// Description: Temperature measurement via ADC.
+/*========================================================================================*/
+
+float Temp_ADC(){
+	
+}
+

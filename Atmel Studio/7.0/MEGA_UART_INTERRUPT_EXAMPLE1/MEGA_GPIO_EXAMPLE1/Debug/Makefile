@@ -55,6 +55,7 @@ C_SRCS +=  \
 ../src/adc_func.c \
 ../src/eeprom.c \
 ../src/gpio_func.c \
+../src/obc_comm.c \
 ../src/peripheral_init.c \
 ../src/uart_func.c \
 ../src/wdt_megarf.c \
@@ -72,6 +73,7 @@ OBJS +=  \
 src/adc_func.o \
 src/eeprom.o \
 src/gpio_func.o \
+src/obc_comm.o \
 src/peripheral_init.o \
 src/uart_func.o \
 src/wdt_megarf.o \
@@ -82,6 +84,7 @@ OBJS_AS_ARGS +=  \
 src/adc_func.o \
 src/eeprom.o \
 src/gpio_func.o \
+src/obc_comm.o \
 src/peripheral_init.o \
 src/uart_func.o \
 src/wdt_megarf.o \
@@ -92,6 +95,7 @@ C_DEPS +=  \
 src/adc_func.d \
 src/eeprom.d \
 src/gpio_func.d \
+src/obc_comm.d \
 src/peripheral_init.d \
 src/uart_func.d \
 src/wdt_megarf.d \
@@ -102,6 +106,7 @@ C_DEPS_AS_ARGS +=  \
 src/adc_func.d \
 src/eeprom.d \
 src/gpio_func.d \
+src/obc_comm.d \
 src/peripheral_init.d \
 src/uart_func.d \
 src/wdt_megarf.d \
@@ -137,6 +142,13 @@ src/eeprom.o: ../src/eeprom.c
 	
 
 src/gpio_func.o: ../src/gpio_func.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 4.3.3
+	$(QUOTE)C:\WinAVR\bin\avr-gcc.exe$(QUOTE)  -x c -DDEBUG -DBOARD=STK600_MEGA  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\include" -I"../src/ASF/common/boards" -I"../src/ASF/mega/utils/preprocessor" -I"../src/ASF/mega/utils" -I"../src/ASF/common/utils" -I"../src" -I"../src/config"  -O1 -fdata-sections -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g3 -Wall  -mmcu=atmega640  -c -std=gnu99 -fno-strict-aliasing -Wstrict-prototypes -Wmissing-prototypes -Werror-implicit-function-declaration -Wpointer-arith -mrelax -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+src/obc_comm.o: ../src/obc_comm.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 4.3.3
 	$(QUOTE)C:\WinAVR\bin\avr-gcc.exe$(QUOTE)  -x c -DDEBUG -DBOARD=STK600_MEGA  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\include" -I"../src/ASF/common/boards" -I"../src/ASF/mega/utils/preprocessor" -I"../src/ASF/mega/utils" -I"../src/ASF/common/utils" -I"../src" -I"../src/config"  -O1 -fdata-sections -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g3 -Wall  -mmcu=atmega640  -c -std=gnu99 -fno-strict-aliasing -Wstrict-prototypes -Wmissing-prototypes -Werror-implicit-function-declaration -Wpointer-arith -mrelax -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
