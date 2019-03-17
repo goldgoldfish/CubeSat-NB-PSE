@@ -16,6 +16,7 @@
 #include <avr/interrupt.h>
 #include "conf_example.h"
 #include "adc.h"
+#include "uart_func.h"
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -181,85 +182,82 @@ int SoC_ADC(){
 	
 	// Lookup table
 	if (amp < 0.6 && amp > 0){
-		switch(volt) {
-			case (volt > 4.00) :
-				soc = 80;
-				break;
-			case (volt < 4.00 && volt > 3.80) :
-				soc = 70;
-				break;
-			case (volt < 3.80 && volt > 3.75) :
-				soc = 60;
-				break;
-			case (volt < 3.75 && volt > 3.70) :
-				soc = 50;
-				break;
-			case (volt < 3.70 && volt > 3.60) :
-				soc = 40;
-				break;
-			case (volt < 3.60 && volt > 3.5) :
-				soc = 30;
-				break;
-			case (volt < 3.50) :
-				soc = 20;
-				break;
-			default:
-				UART0_putstring("Error Reading State of Charge \n\n\r")
-		}	
+		if (volt > 4.00) {
+			soc = 80;
+		} //end if
+		else if (volt < 4.00 && volt > 3.80) {
+			soc = 70;
+		} //end else if
+		else if (volt < 3.80 && volt > 3.75) {
+			soc = 60;
+		} //end else if
+		else if (volt < 3.75 && volt > 3.70) {
+			soc = 50;
+		} //end else if
+		else if (volt < 3.70 && volt > 3.60) {
+			soc = 40;
+		} //end else if
+		else if (volt < 3.60 && volt > 3.5) {
+			soc = 30;
+		} //end else if
+		else if (volt < 3.50) {
+			soc = 20;
+		} //end else if
+		else {
+			UART0_putstring("Error Reading State of Charge \n\n\r");
+		} //end else
 	}
 	else if(amp > 0.6 && amp < 3){
-		switch(volt) {
-			case (volt > 3.75) :
-				soc = 80;
-				break;
-			case (volt < 3.75 && volt > 3.65) :
-				soc = 70;
-				break;
-			case (volt < 3.65 && volt > 3.55) :
-				soc = 60;
-				break;
-			case (volt < 3.55 && volt > 3.45) :
-				soc = 50;
-				break;
-			case (volt < 3.45 && volt > 3.35) :
-				soc = 40;
-				break;
-			case (volt < 3.35 && volt > 3.30) :
-				soc = 30;
-				break;
-			case (volt < 3.30) :
-				soc = 20;
-				break;
-			default:
-				UART0_putstring("Error Reading State of Charge \n\n\r");
+		if (volt > 3.75) {
+			soc = 80;
+		} //end if
+		else if (volt < 3.75 && volt > 3.65) {
+			soc = 70;
+		} //end else if
+		else if (volt < 3.65 && volt > 3.55) {
+			soc = 60;
+		} //end else if
+		else if (volt < 3.55 && volt > 3.45) {
+			soc = 50;
+		} //end else if
+ 		else if (volt < 3.45 && volt > 3.35) {
+			soc = 40;
+		 } //end else if
+		else if (volt < 3.35 && volt > 3.30) {
+			soc = 30;
+		 } //end else if
+		else if (volt < 3.30) {
+			soc = 20;
 		}
+		else {
+			UART0_putstring("Error Reading State of Charge \n\n\r");
+		} //end else
 	}
 	else if(amp > 3){
-		switch(volt) {
-			case (volt > 3.80) :
-				soc = 80;
-				break;
-			case (volt < 3.80 && volt > 3.75) :
-				soc = 70;
-				break;
-			case (volt < 3.75 && volt > 3.65) :
-				soc = 60;
-				break;
-			case (volt < 3.65 && volt > 3.50) :
-				soc = 50;
-				break;
-			case (volt < 3.50 && volt > 3.40) :
-				soc = 40;
-				break;
-			case (volt < 3.40 && volt > 3.25) :
-				soc = 30;
-				break;
-			case (volt < 3.25) :
-				soc = 20;
-				break;
-			default:
-				UART0_putstring("Error Reading State of Charge \n\n\r");
-			}
+		if (volt > 3.80) {
+			soc = 80;
+		} //end if
+		else if (volt < 3.80 && volt > 3.75) {
+			soc = 70;
+		} //end else if
+		else if (volt < 3.75 && volt > 3.65) {
+			soc = 60;
+		} //end else if
+		else if (volt < 3.65 && volt > 3.50) {
+			soc = 50;
+		} //end else if
+		else if (volt < 3.50 && volt > 3.40) {
+			soc = 40;
+		} //end else if
+		else if (volt < 3.40 && volt > 3.25) {
+			soc = 30;
+		} //end else if
+		else if (volt < 3.25) {
+			soc = 20;
+		} //end else if
+		else {
+			UART0_putstring("Error Reading State of Charge \n\n\r");
+		} //end else
 	}
 	else{
 		UART0_putstring("Battery Charging");

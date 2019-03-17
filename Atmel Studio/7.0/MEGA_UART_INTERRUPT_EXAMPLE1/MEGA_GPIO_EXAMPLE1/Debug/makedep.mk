@@ -4,6 +4,8 @@
 
 src\adc_func.c
 
+src\power_state_mat.c
+
 src\eeprom.c
 
 src\gpio_func.c

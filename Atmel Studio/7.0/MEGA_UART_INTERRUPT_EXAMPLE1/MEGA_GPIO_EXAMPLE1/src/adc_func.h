@@ -34,4 +34,6 @@ float Amp_ADC(int Amp_num);
 // Temperature measurement
 float Temp_ADC();
 
+int SoC_ADC();
+
 #endif /* ADC_FUNC_H_ */

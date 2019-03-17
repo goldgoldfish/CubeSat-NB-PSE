@@ -15,7 +15,7 @@
     <AssemblyName>MEGA_GPIO_EXAMPLE1</AssemblyName>
     <Name>MEGA_GPIO_EXAMPLE1</Name>
     <RootNamespace>MEGA_GPIO_EXAMPLE1</RootNamespace>
-    <ToolchainFlavour>WinAVR</ToolchainFlavour>
+    <ToolchainFlavour>Native</ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
     <CacheFlash>true</CacheFlash>
@@ -213,6 +213,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\adc_func.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\power_state_mat.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\power_state_mat.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\eeprom.c">

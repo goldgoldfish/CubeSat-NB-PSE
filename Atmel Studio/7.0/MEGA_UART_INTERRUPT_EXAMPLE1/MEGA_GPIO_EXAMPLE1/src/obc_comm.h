@@ -18,6 +18,6 @@
 void Update_TELEM(float* telem);
 
 // Updates the power state based on the temperature and battery level
-void Update_STATE(uint8_t state);
+char* Update_STATE(uint8_t state);
 
 #endif /* OBC_COMM_H_ */

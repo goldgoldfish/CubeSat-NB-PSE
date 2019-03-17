@@ -80,7 +80,7 @@ char* UART0_getstring(){
 	int i = 0;
 	
 	// Check the first value for the terminator ' ' (SPACE)
-	prev = UART0_getchar(); 
+	prev = UART0_getchar();
 	
 	// Check previous value for terminator (SPACE)
 	while(prev != ' '){

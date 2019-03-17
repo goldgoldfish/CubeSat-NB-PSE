@@ -15,9 +15,54 @@
 #define TOTAL_VOLT 5
 
 #include "adc_func.h"
+#include "uart_func.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+/*========================================================================================*/
+// Function: command_decode
+//
+// Author: Ben Wedemire
+// Date: 2019-03-17
+// Description: When the OBC requests something from the microcontroller this will decode
+// the command and call the relevant function to process and handle the command
+/*========================================================================================*/
+void commandDecode () {
+	char* command = UART0_getstring();
+	
+	if (strlen(command) > 20) {
+		UART0_putstring("Error! Command larger than 20 chars");
+	} //end if
+	else {
+		if (strcmp(command, "TelemRqt ") == 0) {
+			//Update_TELEM();
+			//send telem
+		} //end if
+		else if (strcmp(command, "SubSysRqt ") == 0) {	
+			//process Subsystem request
+		} //else if
+		else if (strcmp(command, "PwrMatEdit ") == 0) {
+			//edit the power state matrix
+		} //end else if
+		else if (strcmp(command, "PwrMatRqt ") == 0) {
+			//send the power state matrix cell to the obc
+		} //end else if
+		else if (strcmp(command, "ModeChange ") == 0) {
+			//change or update the mode of the micro
+		} //end else if
+		else if (strcmp(command, "LaunchReset ") == 0) {
+			//reset the system to a prelaunch config
+		} //end else if
+		else if (strcmp(command, "HelloCheck ") == 0) {
+			//say hello
+		} //end else if
+		else {
+			UART0_putstring(strcat("Error! Command was: ", command));
+		} //end else
+	} //end else
+} //end commandDecode
 
 /*========================================================================================*/
 // Function: Update_TELEM
@@ -56,7 +101,7 @@ void Update_TELEM(float* telem){
 //				is based on the power state matrix.
 /*========================================================================================*/
 
-**char Update_STATE(uint8_t state){
+char* Update_STATE(uint8_t state){
 	
 	// String Index
 	int i = 0;
@@ -79,14 +124,31 @@ void Update_TELEM(float* telem){
 	
 	while(i < 8){
 		if (mask & state){
-			power[i] = "ON";
+			strcpy(power[i],"ON");
 			i++;
 			mask = mask << 1; // shift left once
 		}
 		else{
-			power[i] = "OFF";
+			strcpy(power[i],"OFF");
 			i++;
 			mask = mask << 1; // shift left once
 		}
 	}	
 }
+
+/*========================================================================================*/
+// Function: subSysRqt
+//
+// Author: Ben Wedemire
+// Date: 2019-03-17
+// Description: Determines if a sub System can be powered up
+/*========================================================================================*/
+
+void subSysRqt () {
+	
+	//check if we are in manual mode
+	
+	//if we are service the request
+	//
+	
+} //end subSysRqt
