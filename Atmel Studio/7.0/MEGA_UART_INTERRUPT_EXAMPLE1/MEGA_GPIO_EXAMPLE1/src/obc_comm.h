@@ -17,7 +17,7 @@
 // Updates all telemetry information regarding voltage, current and temperature
 void Update_TELEM(float* telem);
 
-
-
+// Updates the power state based on the temperature and battery level
+void Update_STATE(uint8_t state);
 
 #endif /* OBC_COMM_H_ */
