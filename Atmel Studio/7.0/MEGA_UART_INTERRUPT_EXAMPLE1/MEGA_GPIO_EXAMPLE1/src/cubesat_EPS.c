@@ -80,11 +80,25 @@ UART0_init();
 	char* string;
 	//while (true){
 		
+		
+		Set_GPIO(16);
+		Clear_GPIO(15);
+		Clear_GPIO(14);
+		//Set_GPIO(15);
+		//Set_GPIO(14);
+		Set_GPIO(26);
+		Clear_GPIO(26);
+		
+		Clear_GPIO(16);
+		//Amp_ADC();
+		//Volt_ADC();
+		
+		
 		//current = Amp_ADC(i);
 		//sprintf(measure,"%f",current);
 		//UART0_putstring(measure);
-		string = UART0_getstring();
-		UART0_putstring(string);
+		//string = UART0_getstring();
+		//UART0_putstring(string);
 		//i++;
 	//}
 	return 0;
