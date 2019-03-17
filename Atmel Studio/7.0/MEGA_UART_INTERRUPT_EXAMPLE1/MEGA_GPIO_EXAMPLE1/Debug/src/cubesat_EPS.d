@@ -27,7 +27,7 @@ src/cubesat_EPS.d src/cubesat_EPS.o src/cubesat_EPS.o:  \
   c:/winavr/lib/gcc/../../avr/include/stdio.h \
   c:\winavr\bin\../lib/gcc/avr/4.3.3/include/stdarg.h \
   ../src/peripheral_init.h ../src/adc_func.h ../src/eeprom.h \
-  ../src/uart_func.h ../src/gpio_func.h
+  ../src/uart_func.h ../src/gpio_func.h ../src/obc_comm.h
 
 ../src/ASF/mega/utils/compiler.h:
 
@@ -100,3 +100,5 @@ c:\winavr\bin\../lib/gcc/avr/4.3.3/include/stdarg.h:
 ../src/uart_func.h:
 
 ../src/gpio_func.h:
+
+../src/obc_comm.h:

@@ -130,6 +130,7 @@ float Amp_ADC(int Amp_num){
 	float val = 0; // initialize the voltage value to 0 V
 	int i = 0;
 	
+	// Voltage rail current 8V, 5V, 3V3-1, 3V3-2 respectively
 	if(Amp_num < 4){
 		ADC_num = Amp_num;
 		while(i < 1000){
@@ -138,6 +139,7 @@ float Amp_ADC(int Amp_num){
 		}
 		val = val/1000;
 	}
+	// Solar current and Battery current, respectively
 	else if(Amp_num == 4 || Amp_num == 5){
 		ADC_num = Amp_num + 5;
 		while(i < 1000){
@@ -161,3 +163,105 @@ float Temp_ADC(){
 	
 }
 
+/*========================================================================================*/
+// Function: SoC_ADC
+//
+// Author: Chris Thomas
+// Date: 2019-03-17
+// Description: Temperature measurement via ADC.
+/*========================================================================================*/
+
+int SoC_ADC(){
+	// return value
+	int soc = 0;
+	
+	// Check Battery voltage and current
+	float amp = Amp_ADC(5);
+	float volt = Volt_ADC(4);
+	
+	// Lookup table
+	if (amp < 0.6 && amp > 0){
+		switch(volt) {
+			case (volt > 4.00) :
+				soc = 80;
+				break;
+			case (volt < 4.00 && volt > 3.80) :
+				soc = 70;
+				break;
+			case (volt < 3.80 && volt > 3.75) :
+				soc = 60;
+				break;
+			case (volt < 3.75 && volt > 3.70) :
+				soc = 50;
+				break;
+			case (volt < 3.70 && volt > 3.60) :
+				soc = 40;
+				break;
+			case (volt < 3.60 && volt > 3.5) :
+				soc = 30;
+				break;
+			case (volt < 3.50) :
+				soc = 20;
+				break;
+			default:
+				UART0_putstring("Error Reading State of Charge \n\n\r")
+		}	
+	}
+	else if(amp > 0.6 && amp < 3){
+		switch(volt) {
+			case (volt > 3.75) :
+				soc = 80;
+				break;
+			case (volt < 3.75 && volt > 3.65) :
+				soc = 70;
+				break;
+			case (volt < 3.65 && volt > 3.55) :
+				soc = 60;
+				break;
+			case (volt < 3.55 && volt > 3.45) :
+				soc = 50;
+				break;
+			case (volt < 3.45 && volt > 3.35) :
+				soc = 40;
+				break;
+			case (volt < 3.35 && volt > 3.30) :
+				soc = 30;
+				break;
+			case (volt < 3.30) :
+				soc = 20;
+				break;
+			default:
+				UART0_putstring("Error Reading State of Charge \n\n\r");
+		}
+	}
+	else if(amp > 3){
+		switch(volt) {
+			case (volt > 3.80) :
+				soc = 80;
+				break;
+			case (volt < 3.80 && volt > 3.75) :
+				soc = 70;
+				break;
+			case (volt < 3.75 && volt > 3.65) :
+				soc = 60;
+				break;
+			case (volt < 3.65 && volt > 3.50) :
+				soc = 50;
+				break;
+			case (volt < 3.50 && volt > 3.40) :
+				soc = 40;
+				break;
+			case (volt < 3.40 && volt > 3.25) :
+				soc = 30;
+				break;
+			case (volt < 3.25) :
+				soc = 20;
+				break;
+			default:
+				UART0_putstring("Error Reading State of Charge \n\n\r");
+			}
+	}
+	else{
+		UART0_putstring("Battery Charging");
+	}
+}

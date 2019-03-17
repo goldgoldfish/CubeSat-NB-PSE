@@ -77,15 +77,16 @@ void UART0_putstring(char *string){
 char* UART0_getstring(){
 	char string[50];
 	char prev;
-	int i = 1;
+	int i = 0;
 	
 	// Check the first value for the terminator ' ' (SPACE)
 	prev = UART0_getchar(); 
 	
 	// Check previous value for terminator (SPACE)
 	while(prev != ' '){
-		string[i] = UART0_getchar(); // save the char if it isn't the terminator
+		string[i] = prev; // save the char if it isn't the terminator
 		i++;
+		prev = UART0_getchar();
 	}
 	
 	return string;

@@ -52,9 +52,12 @@ int p = 0;
 // Telemetry information storage
 float telem[12];
 
+// Power State
+uint8_t state = 0;
+
 ISR(TIMER1_COMPA_vect){
 	
-	Update_TELEM();
+	Update_TELEM(telem);
 		
 }
 
@@ -84,5 +87,6 @@ UART0_init();
 		UART0_putstring(string);
 		//i++;
 	//}
+	return 0;
 }
 
