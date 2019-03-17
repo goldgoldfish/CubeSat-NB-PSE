@@ -1,58 +1,63 @@
-src/peripheral_init.d src/peripheral_init.o src/peripheral_init.o:  \
- ../src/peripheral_init.c ../src/ASF/mega/utils/compiler.h \
-  c:/winavr/lib/gcc/../../avr/include/avr/io.h \
-  c:/winavr/lib/gcc/../../avr/include/avr/sfr_defs.h \
-  c:/winavr/lib/gcc/../../avr/include/inttypes.h \
-  c:/winavr/lib/gcc/../../avr/include/stdint.h \
-  C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\include/avr/iom640.h \
-  C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\include/avr/iomxx0_1.h \
-  c:/winavr/lib/gcc/../../avr/include/avr/portpins.h \
-  c:/winavr/lib/gcc/../../avr/include/avr/common.h \
-  c:/winavr/lib/gcc/../../avr/include/avr/version.h \
-  c:/winavr/lib/gcc/../../avr/include/avr/fuse.h \
-  c:/winavr/lib/gcc/../../avr/include/avr/lock.h \
-  c:\winavr\bin\../lib/gcc/avr/4.3.3/include/stdbool.h \
-  c:\winavr\bin\../lib/gcc/avr/4.3.3/include/stddef.h \
-  c:/winavr/lib/gcc/../../avr/include/stdlib.h \
-  ../src/ASF/common/utils/parts.h ../src/ASF/common/utils/interrupt.h \
-  ../src/ASF/common/utils/interrupt/interrupt_avr8.h \
-  c:/winavr/lib/gcc/../../avr/include/avr/interrupt.h \
-  ../src/ASF/mega/utils/progmem.h \
-  c:/winavr/lib/gcc/../../avr/include/avr/pgmspace.h \
-  ../src/ASF/common/boards/board.h ../src/config/conf_example.h \
-  ../src/adc.h ../src/adc_megaxx0_1_4.h \
-  c:/winavr/lib/gcc/../../avr/include/string.h ../src/peripheral_init.h \
-  c:/winavr/lib/gcc/../../avr/include/util/setbaud.h ../src/wdt_megarf.h
+src/peripheral_init.d src/peripheral_init.o: ../src/peripheral_init.c \
+ ../src/ASF/mega/utils/compiler.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\sfr_defs.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\inttypes.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stdint.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\stdint.h \
+ C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\include/avr/iom640.h \
+ C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\include/avr/iomxx0_1.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\portpins.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\common.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\version.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\fuse.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\lock.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stdbool.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stddef.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\stdlib.h \
+ ../src/ASF/common/utils/parts.h ../src/ASF/common/utils/interrupt.h \
+ ../src/ASF/common/utils/interrupt/interrupt_avr8.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\interrupt.h \
+ ../src/ASF/mega/utils/progmem.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\pgmspace.h \
+ ../src/ASF/common/boards/board.h ../src/config/conf_example.h \
+ ../src/adc.h ../src/adc_megaxx0_1_4.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\string.h \
+ ../src/peripheral_init.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\setbaud.h \
+ ../src/wdt_megarf.h
 
 ../src/ASF/mega/utils/compiler.h:
 
-c:/winavr/lib/gcc/../../avr/include/avr/io.h:
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h:
 
-c:/winavr/lib/gcc/../../avr/include/avr/sfr_defs.h:
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\sfr_defs.h:
 
-c:/winavr/lib/gcc/../../avr/include/inttypes.h:
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\inttypes.h:
 
-c:/winavr/lib/gcc/../../avr/include/stdint.h:
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stdint.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\stdint.h:
 
 C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\include/avr/iom640.h:
 
 C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\include/avr/iomxx0_1.h:
 
-c:/winavr/lib/gcc/../../avr/include/avr/portpins.h:
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\portpins.h:
 
-c:/winavr/lib/gcc/../../avr/include/avr/common.h:
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\common.h:
 
-c:/winavr/lib/gcc/../../avr/include/avr/version.h:
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\version.h:
 
-c:/winavr/lib/gcc/../../avr/include/avr/fuse.h:
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\fuse.h:
 
-c:/winavr/lib/gcc/../../avr/include/avr/lock.h:
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\lock.h:
 
-c:\winavr\bin\../lib/gcc/avr/4.3.3/include/stdbool.h:
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stdbool.h:
 
-c:\winavr\bin\../lib/gcc/avr/4.3.3/include/stddef.h:
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stddef.h:
 
-c:/winavr/lib/gcc/../../avr/include/stdlib.h:
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\stdlib.h:
 
 ../src/ASF/common/utils/parts.h:
 
@@ -60,11 +65,11 @@ c:/winavr/lib/gcc/../../avr/include/stdlib.h:
 
 ../src/ASF/common/utils/interrupt/interrupt_avr8.h:
 
-c:/winavr/lib/gcc/../../avr/include/avr/interrupt.h:
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\interrupt.h:
 
 ../src/ASF/mega/utils/progmem.h:
 
-c:/winavr/lib/gcc/../../avr/include/avr/pgmspace.h:
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\pgmspace.h:
 
 ../src/ASF/common/boards/board.h:
 
@@ -74,10 +79,10 @@ c:/winavr/lib/gcc/../../avr/include/avr/pgmspace.h:
 
 ../src/adc_megaxx0_1_4.h:
 
-c:/winavr/lib/gcc/../../avr/include/string.h:
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\string.h:
 
 ../src/peripheral_init.h:
 
-c:/winavr/lib/gcc/../../avr/include/util/setbaud.h:
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\setbaud.h:
 
 ../src/wdt_megarf.h:
