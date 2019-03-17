@@ -68,7 +68,7 @@ uint16_t Read_ADC(){
 // Description: Checks the desired ADC Channel
 /*========================================================================================*/
 
-double Check_ADC(int i){
+float Check_ADC(int i){
 	
 	// Choose the correct ADC channel to read from
 	Change_ADC(i);
@@ -86,9 +86,9 @@ double Check_ADC(int i){
 // Description: Voltage Measurements via ADC.
 /*========================================================================================*/
 
-double Volt_ADC(int Volt_num){
+float Volt_ADC(int Volt_num){
 	int ADC_num = Volt_num + 4; // ADC_num is the value needed for Change_ADC
-	double val = 0;
+	float val = 0;
 	
 	// Explained
 	// voltage = (ADC_value / total resolution)

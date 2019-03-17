@@ -23,12 +23,15 @@ void Change_ADC(int i);
 uint16_t Read_ADC();
 
 // Read value from selected ADC Channel
-double Check_ADC(int i);
+float Check_ADC(int i);
 
 // Voltmeter measurements
-double Volt_ADC(int Volt_num);
+float Volt_ADC(int Volt_num);
 
 // Ammeter measurements
-double Amp_ADC(int Amp_num);
+float Amp_ADC(int Amp_num);
+
+// Temperature measurement
+float Temp_ADC();
 
 #endif /* ADC_FUNC_H_ */

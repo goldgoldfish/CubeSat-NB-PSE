@@ -50,7 +50,7 @@
 int p = 0;
 
 // Telemetry information storage
-float telem[16];
+float telem[12];
 
 ISR(TIMER1_COMPA_vect){
 	
