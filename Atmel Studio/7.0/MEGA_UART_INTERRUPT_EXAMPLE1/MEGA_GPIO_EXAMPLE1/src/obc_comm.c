@@ -15,7 +15,11 @@
 #define TOTAL_VOLT 5
 
 #include "adc_func.h"
+<<<<<<< HEAD
+#include <string.h>
+=======
 #include "uart_func.h"
+>>>>>>> 6f71cd3a1edf73aa0511b72bd8becd624ba452f4
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
