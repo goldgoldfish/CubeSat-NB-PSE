@@ -32,9 +32,42 @@
 #include "wdt_megarf.h"
 
 /*========================================================================================*/
+// Function: ALL_init
+//
+// Author: Chris Thomas
+// Date: 2019-03-18
+// Description: Initializes all peripherals needed for EPS microcontroller functionality.
+/*========================================================================================*/
+
+void ALL_init(){
+	
+	// Initialize GPIO
+	GPIO_init();
+	
+	// Initialize the ADC
+	ADC_init();
+	
+	// Initialize UART
+	UART0_init();
+	
+	// Initialize Timer (CLK) *** NOT during testing ***
+	CLK_init();
+	
+	// Initialize Watchdog Timer
+	WD_init();
+	
+	// Initialize 5V voltage rail to get readings
+	
+}
+
+
+
+/*========================================================================================*/
+// Function: GPIO_init
+//
 // Author: Chris Thomas
 // Date: 2019-01-15
-// Description: General Purpose I/O Port initialization
+// Description: General Purpose I/O Port initializations.
 /*========================================================================================*/
 
 void GPIO_init(){
@@ -48,7 +81,7 @@ void GPIO_init(){
 	DDRC = 0xFF; // PORTC pins 0-7 set as outputs
 	
 	// Set Output as Low
-	PORTH = 0x00;
+	PORTH = 0x02; // pin 1 set high to inhibit temperature measurement
 	PORTL = 0x00;
 	PORTA = 0x00;
 	PORTJ = 0x00; 
@@ -57,9 +90,11 @@ void GPIO_init(){
 }
 
 /*========================================================================================*/
+// Function: ADC_init
+//
 // Author: Chris Thomas
 // Date: 2019-01-22
-// Description: Analog to Digital Converter initialization
+// Description: Analog to Digital Converter initialization.
 /*========================================================================================*/
 
 void ADC_init(){
@@ -78,21 +113,23 @@ void ADC_init(){
 }
 
 /*========================================================================================*/
+// Function: CLK_init
+//
 // Author: Chris Thomas
 // Date: 2019-02-07
-// Description: Timer Initialization for Interrupt Routine
+// Description: Timer Initialization for Interrupt Routine.
 /*========================================================================================*/
 
 CLK_init(){
 	
-	// Enable Timer0
+	// Enable Timer 1
 	TCCR1B = 0x05;
 	
 	// Enable Output Compare Interrupt
 	TIMSK1 = 0x02;
 	
-	// Set Counter to 128 clock cycles
-	OCR1A = 0xffff;
+	// Set Counter to 65,536 clock cycles (MAX)
+	OCR1A = 0x1fff;
 	
 	// Set clock to 0
 	TCNT1 = 0x0000;
@@ -100,9 +137,11 @@ CLK_init(){
 }
 
 /*========================================================================================*/
+// Function: UART0_init
+//
 // Author: Chris Thomas
 // Date: 2019-02-16
-// Description: UART Initialization
+// Description: UART0 Initialization
 /*========================================================================================*/
 
 void UART0_init(){
@@ -121,6 +160,8 @@ void UART0_init(){
 }
 
 /*========================================================================================*/
+// Function: WD_init
+//
 // Author: Chris Thomas
 // Date: 2019-02-16
 // Description: WatchDog Timer initialization.
@@ -128,7 +169,7 @@ void UART0_init(){
 
 void WD_init(){
 	
-	// Set Prescaller
+	// Set Prescaler
 	
 	// Watchdog Reset
 	//wdt_enable(INTERRUPT_SYSTEM_RESET_MODE);

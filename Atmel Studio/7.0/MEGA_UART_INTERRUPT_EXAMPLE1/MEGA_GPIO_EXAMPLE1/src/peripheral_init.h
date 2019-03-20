@@ -14,13 +14,16 @@
 #ifndef PERIPHERAL_INIT_H_
 #define PERIPHERAL_INIT_H_
 
+// ALL Peripherals Initialization
+void ALL_init();
+
 // GPIO Initialization
 void GPIO_init();
 
 // ADC Initialization
 void ADC_init();
 
-// Clock intialization w/ Interrupt
+// Clock Initialization w/ Interrupt
 void CLK_init();
 
 // UART Initialization w/ Interrupt

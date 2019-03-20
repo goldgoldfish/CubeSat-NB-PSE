@@ -34,6 +34,7 @@ float Amp_ADC(int Amp_num);
 // Temperature measurement
 float Temp_ADC();
 
-int SoC_ADC();
+// Get state of charge
+int SoC_ADC(float volt, float amp);
 
 #endif /* ADC_FUNC_H_ */

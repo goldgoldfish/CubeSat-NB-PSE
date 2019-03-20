@@ -11,29 +11,25 @@
 //				communication with the EPS microcontroller.
 /*========================================================================================*/
 
-#define TOTAL_AMP 6
-#define TOTAL_VOLT 5
-
+#include "obc_comm.h"
+#include "gpio_func.h"
 #include "adc_func.h"
-<<<<<<< HEAD
 #include <string.h>
-=======
 #include "uart_func.h"
->>>>>>> 6f71cd3a1edf73aa0511b72bd8becd624ba452f4
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <float.h>
 
 /*========================================================================================*/
 // Function: command_decode
 //
 // Author: Ben Wedemire
 // Date: 2019-03-17
-// Description: When the OBC requests something from the microcontroller this will decode
-// the command and call the relevant function to process and handle the command
+// Description: Decodes commands from the OBC and calls their corresponding function.		
 /*========================================================================================*/
-void commandDecode () {
+void commandDecode (uint8_t* telem) {
 	char* command = UART0_getstring();
 	
 	if (strlen(command) > 20) {
@@ -41,7 +37,7 @@ void commandDecode () {
 	} //end if
 	else {
 		if (strcmp(command, "TelemRqt ") == 0) {
-			//Update_TELEM();
+			//Update_TELEM(telem);
 			//send telem
 		} //end if
 		else if (strcmp(command, "SubSysRqt ") == 0) {	
@@ -63,7 +59,7 @@ void commandDecode () {
 			//say hello
 		} //end else if
 		else {
-			UART0_putstring(strcat("Error! Command was: ", command));
+			UART0_putstring(strcat("Error! The following command isn't recognized: %s", command));
 		} //end else
 	} //end else
 } //end commandDecode
@@ -77,6 +73,12 @@ void commandDecode () {
 /*========================================================================================*/
 
 void Update_TELEM(float* telem){
+	
+	Set_GPIO(11);
+	
+	while(Volt_ADC(2) < 4.8){
+		// Wait until 5V rail transient is finished
+	}
 	
 	// Ammeter measurements
 	telem[0] = Amp_ADC(2); // 3V3-1 rail current
@@ -105,13 +107,13 @@ void Update_TELEM(float* telem){
 //				is based on the power state matrix.
 /*========================================================================================*/
 
-char* Update_STATE(uint8_t state){
+void Update_STATE(char* power, uint8_t state){
 	
 	// String Index
 	int i = 0;
 	
 	// Storage for subsystem states "ON" or "OFF"
-	char power[8][3];
+	
 	/* Data layout
 	power[0] => VBatt   Heater
 	power[1] => 5V      Heater
@@ -125,19 +127,19 @@ char* Update_STATE(uint8_t state){
 	
 	// 8 bit mask to check the state of each position
 	uint8_t mask = 0x01;
+	// keep track of the first index
 	
 	while(i < 8){
 		if (mask & state){
-			strcpy(power[i],"ON");
-			i++;
+			power[i] = 'Y';
 			mask = mask << 1; // shift left once
 		}
 		else{
-			strcpy(power[i],"OFF");
-			i++;
+			power[i] = 'N';
 			mask = mask << 1; // shift left once
 		}
-	}	
+		i++;
+	}
 }
 
 /*========================================================================================*/
@@ -156,3 +158,132 @@ void subSysRqt () {
 	//
 	
 } //end subSysRqt
+
+/*========================================================================================*/
+// Function: Update_OBC
+//
+// Author: Chris Thomas
+// Date: 2019-02-03
+// Description: Updates the telemetry information to the OBC.
+/*========================================================================================*/
+
+void Update_OBC(float* telem, char* power){
+	// Prints a border to the Putty
+	char stars[60] = "/***************************************CubeSat EPS"; // left side of border
+	char stars2[45] = "***************************************/"; // right side of border
+	char* border; // complete border top and bottom
+	border = strcat(stars,stars2);
+	
+	// Print border
+	UART0_putstring(border);
+	
+	// Spacing
+	UART0_putchar('\n');
+	UART0_putchar('\n');
+	UART0_putchar('\r');
+	
+	// String Initializations
+	char loads[8][10] = {"Heater 1", "Heater 2", "Heater 3", "OBC", "Imager", "GRIPS", "S-Band", "UHF"};
+	char sensors[12][10] = {"3V3-1 [A]", "3V3-2 [A]", "5V [A]", "8V [A]", "VBatt [A]", "Solar [A]",
+							"3V3-1 [V]", "3V3-2 [V]", "5V [V]", "8V [V]", "VBatt [V]", "Temp [C]"};
+							
+	// Doing to the spacing correctly						
+	int spacing = 15;
+	int spaces = 0;
+	int spaces2 = 0; // for inner loops
+	int l_incr = 0; // load increment (8)
+	int s_incr = 0; // sensor increment (12)
+	int i; // increment for telemetry (0 to 6, then 6 to 12)
+	char measure[10]; // used for sprintf
+	
+	// Print the telemetry information
+	while (s_incr < 12){
+		
+		// Switch lines after 6 titles are written and write
+		// data on the next line
+		if (s_incr == 6){
+			UART0_putchar('\n');
+			UART0_putchar('\r');
+			// print values
+			while(i < s_incr){
+				while(spaces2){
+					UART0_putchar(' ');
+					spaces2--;
+				}
+				sprintf(measure,"%f",telem[i]);
+				UART0_putstring(measure);
+				i++;
+				spaces2 = spacing - strlen(measure);
+			}
+			UART0_putchar('\n');
+			UART0_putchar('\n');
+			UART0_putchar('\r');
+			spaces = 0; // reset for next line of titles
+		}
+		
+		// Put the titles in normally
+		// re-initialize the spaces
+		while(spaces){
+			UART0_putchar(' ');
+			spaces--;
+		}
+		UART0_putstring(sensors[s_incr]);
+		s_incr++;
+		spaces = spacing - strlen(sensors[s_incr - 1]);
+		
+		// Print the second round of telemetry data
+		if (s_incr == 12){
+			spaces2 = 0; // re-initialize spaces to 0
+			UART0_putchar('\n');
+			UART0_putchar('\r');
+			// print values
+			while(i < s_incr){
+				while(spaces2){
+					UART0_putchar(' ');
+					spaces2--;
+				}
+				sprintf(measure,"%f",telem[i]);
+				UART0_putstring(measure);
+				i++;
+				spaces2 = spacing - strlen(measure);
+			}
+		}
+		
+	}
+	
+	
+	// Print the Load Titles
+	spaces = 0; // re initialize spaces
+	UART0_putchar('\n');
+	UART0_putchar('\n');
+	UART0_putchar('\r');
+	while(l_incr < 8){
+		while(spaces){
+			UART0_putchar(' ');
+			spaces--;
+		}
+		UART0_putstring(loads[l_incr]);
+		l_incr++;
+		spaces = spacing - strlen(loads[l_incr - 1]);
+	}
+	
+	// Print the load states
+	// Print the Load Titles
+	l_incr = 0; // reset load increment to 0
+	spaces = 0; // re initialize spaces
+	UART0_putchar('\n');
+	UART0_putchar('\r');
+	while(l_incr < 8){
+		while(spaces){
+			UART0_putchar(' ');
+			spaces--;
+		}
+		UART0_putchar(power[l_incr]);
+		l_incr++;
+		spaces = spacing - 1;
+	}
+	UART0_putchar('\n');
+	UART0_putchar('\n');
+	UART0_putchar('\r');
+}
+
