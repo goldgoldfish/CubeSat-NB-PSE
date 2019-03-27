@@ -12,14 +12,8 @@
 /*========================================================================================*/
 
 #include "eeprom.h"
-#include "compiler.h"
 #include <board.h>
-#include <avr/interrupt.h>
-#include "conf_example.h"
-#include <util/delay.h>
-#include <stdlib.h>
 #include <stdint.h>
-#include <string.h>
 #include <avr/io.h>
 #include <stdio.h>
 

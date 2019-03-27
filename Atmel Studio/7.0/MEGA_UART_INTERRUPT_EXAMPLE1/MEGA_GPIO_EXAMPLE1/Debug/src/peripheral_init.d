@@ -21,7 +21,6 @@ src/peripheral_init.d src/peripheral_init.o: ../src/peripheral_init.c \
  ../src/ASF/mega/utils/progmem.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\pgmspace.h \
  ../src/ASF/common/boards/board.h ../src/config/conf_example.h \
- ../src/adc.h ../src/adc_megaxx0_1_4.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\string.h \
  ../src/peripheral_init.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\setbaud.h \
@@ -74,10 +73,6 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\
 ../src/ASF/common/boards/board.h:
 
 ../src/config/conf_example.h:
-
-../src/adc.h:
-
-../src/adc_megaxx0_1_4.h:
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\string.h:
 

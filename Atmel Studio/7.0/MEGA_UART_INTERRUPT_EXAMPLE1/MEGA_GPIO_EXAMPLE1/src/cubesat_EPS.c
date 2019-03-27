@@ -14,14 +14,13 @@
 #include <board.h>
 #include <avr/interrupt.h>
 #include "conf_example.h"
-#include "adc.h"
 #include <util/delay.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include "wdt_megarf.h"
 #include <avr/io.h>
 #include <stdio.h>
+#include <float.h>
 
 // User Defined Libraries
 #include "peripheral_init.h"
@@ -31,6 +30,9 @@
 #include "gpio_func.h"
 #include "eeprom.h"
 #include "obc_comm.h"
+#include "power_state_mat.h"
+#include "power_switch.h"
+#include "launcher.h"
 
 /*========================================================================================*/
 // Author: Chris Thomas
@@ -40,17 +42,35 @@
 
 
 // POST Launch Bits
-int p = 0;
 
 // Telemetry information storage
-float telem[12];
-char* power[8];
-int soc = 0;
-char charge[5];
+double telem[12];
+char power[8];
+
+// stat of charge
+float soc = 0;
+float prev_soc = 0;
+
+// temperature initialization
+float temp = 0;
+float prev_temp = 0;
+
+// Power State matrix
+uint8_t pwrMat[25];
+int state_num = 0;
 
 // Power State
 uint8_t state = 0;
+uint8_t prev_state = 0;
 
+// Demo variables
+char obc_command[20]; // <----- **** Get rid of this soon *****///
+char fake;
+uint8_t mode = 0;
+
+uint8_t launch = 0x00;
+uint8_t check = 0x01;
+uint8_t sum_check = 0x00;
 
 /*========================================================================================*/
 // Function: Timer Interrupt
@@ -66,39 +86,79 @@ ISR(TIMER1_COMPA_vect){
 	// Disable Interrupts
 	cli();
 	
-	Update_STATE(power,state);
-	Update_TELEM(telem);
-	Update_OBC(telem, power);
+	// Update Telemetry information
+	Update_TELEM(telem, state);
+	
+	// Check Power State
+	temp = telem[11];
 	soc = SoC_ADC(telem[10],telem[4]);
-	if(soc >= 70){
-		charge[0] = '7';
+	
+	// Update power state
+	if(mode){
+		state_num = PowerStateCheck(soc, temp);
+		state = pwrMat[state_num];
+		// Update the state of the loads
+		Update_STATE(power,state);
+		Update_LOADS(state);
+		Update_OBC(telem, power);
 	}
 	else{
-		charge[0] = '0';
+		Update_LOADS(state);
+		Update_STATE(power,state);
+		Update_OBC(telem, power);
 	}
-	UART0_putchar(charge[0]);
-	// Re-enable Interrupts
+	
+		
+	// Update OBC with newly acquired info
+	
+	// Print the state of charge and power matrix index
+	
+	
+	// Save previous states for less computation
+	prev_state = state;
+	prev_temp  = temp;
+	prev_soc = soc;
+	
+	// Re-enable interrupts
 	sei();
 		
 }
 
-int main(void){
-	GPIO_init();
-	UART0_init();
-	ADC_init();
-	CLK_init();
+ISR(USART0_RX_vect){
 	
+	cli();
+	
+	fake = UART0_getchar();
+	commandDecode(obc_command, telem, mode, state);
+		
 	sei();
-	Set_GPIO(11);
-	//Set_GPIO(3);
-	_delay_ms(1000);
-	Set_GPIO(10);
-	Set_GPIO(28);
-	_delay_ms(1000);
-	Set_GPIO(16);
-	Set_GPIO(26);
+}
+
+ISR(WDT_vect){
+	cli();
+	WD_init();
+	sei();
+}
+
+int main(void){
+	
+	ALL_init();
+	
+	// Disable Interrupts upon start
+	cli();
+	
+	UART0_putstring("I have been reset");
+	
+	launch_state();
+	
+	// Update power state matrix
+	pwrMatInit(pwrMat);
+	
+	//****** RE-Enable ******//
+	sei();
 	
 	while(true){
+		
 		
 		
 	}

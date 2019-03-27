@@ -14,6 +14,7 @@
 #include <board.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 /*========================================================================================*/
 // Function: UART0_putchar
@@ -74,8 +75,7 @@ void UART0_putstring(char *string){
 /*========================================================================================*/
 
 
-char* UART0_getstring(){
-	char string[50];
+void UART0_getstring(char* message){
 	char prev;
 	int i = 0;
 	
@@ -84,10 +84,8 @@ char* UART0_getstring(){
 	
 	// Check previous value for terminator (SPACE)
 	while(prev != ' '){
-		string[i] = prev; // save the char if it isn't the terminator
+		message[i] = prev; // save the char if it isn't the terminator
 		i++;
 		prev = UART0_getchar();
 	}
-	
-	return string;
 }

@@ -12,6 +12,9 @@
 /*========================================================================================*/
 
 #include "obc_comm.h"
+#include "power_switch.h"
+#include "power_state_mat.h"
+#include "launcher.h"
 #include "gpio_func.h"
 #include "adc_func.h"
 #include <string.h>
@@ -25,41 +28,62 @@
 /*========================================================================================*/
 // Function: command_decode
 //
-// Author: Ben Wedemire
+// Author: Ben Wedemire & Chris Thomas
 // Date: 2019-03-17
 // Description: Decodes commands from the OBC and calls their corresponding function.		
 /*========================================================================================*/
-void commandDecode (uint8_t* telem) {
-	char* command = UART0_getstring();
+void commandDecode (char* obc_command, double* telem, uint8_t mode, uint8_t power_state){
+		
+	// Receive Command from OBC
+	UART0_getstring(obc_command);
 	
-	if (strlen(command) > 20) {
+	// Print the Command for TESTING
+	UART0_putstring(obc_command);
+	
+	if (strlen(obc_command) > 20) {
 		UART0_putstring("Error! Command larger than 20 chars");
 	} //end if
 	else {
-		if (strcmp(command, "TelemRqt ") == 0) {
-			//Update_TELEM(telem);
+		if (strcmp(obc_command, "TelemRqt") == 0) {
+			Update_TELEM(telem, power_state);
 			//send telem
 		} //end if
-		else if (strcmp(command, "SubSysRqt ") == 0) {	
-			//process Subsystem request
+		else if (strcmp(obc_command, "SubSysRqt") == 0) {	
+			if(!mode){
+				// power_state = some new value (input yet to be determined, handle in GUI) 
+			}
+			else{
+				// Tell the user the EPS is still in autonomous mode and it must be changed
+			}
 		} //else if
-		else if (strcmp(command, "PwrMatEdit ") == 0) {
+		else if (strcmp(obc_command, "PwrMatEdit") == 0) {
 			//edit the power state matrix
 		} //end else if
-		else if (strcmp(command, "PwrMatRqt ") == 0) {
+		else if (strcmp(obc_command, "PwrMatRqt") == 0) {
 			//send the power state matrix cell to the obc
 		} //end else if
-		else if (strcmp(command, "ModeChange ") == 0) {
+		else if (strcmp(obc_command, "ModeChange") == 0) {
+			// The character 0 must be sent to go into manual mode
+			if(UART0_getchar() - 0x31){
+				Set_MODE(0);
+			}
+			else{
+				Set_MODE(1);
+			}
 			//change or update the mode of the micro
+			// In this state do not update the power state, simply remain in the one specified
+			// Have an SOC thing here
 		} //end else if
-		else if (strcmp(command, "LaunchReset ") == 0) {
-			//reset the system to a prelaunch config
+		else if (strcmp(obc_command, "LaunchReset") == 0) {
+			launch_reset();
+			//reset the system to a pre-launch config
+			// Use the watchdog to reset the system
 		} //end else if
-		else if (strcmp(command, "HelloCheck ") == 0) {
+		else if (strcmp(obc_command, "HelloCheck") == 0) {
 			//say hello
 		} //end else if
 		else {
-			UART0_putstring(strcat("Error! The following command isn't recognized: %s", command));
+			//UART0_putstring(strcat("Error! The following command isn't recognized: ", obc_command));
 		} //end else
 	} //end else
 } //end commandDecode
@@ -72,13 +96,14 @@ void commandDecode (uint8_t* telem) {
 // Description: Updates telemetry information for OBC. Voltage, current and temperature.
 /*========================================================================================*/
 
-void Update_TELEM(float* telem){
+void Update_TELEM(double* telem, uint8_t power_state){
 	
-	Set_GPIO(11);
+	// Set 5V rail for readings (needed for current sensors)
 	
-	while(Volt_ADC(2) < 4.8){
-		// Wait until 5V rail transient is finished
-	}
+	// RE-ENABLE FOR DEMOOOOOOOOOOO//////
+	
+	//Enable_5V();
+	// ^^^^^^^^^^^
 	
 	// Ammeter measurements
 	telem[0] = Amp_ADC(2); // 3V3-1 rail current
@@ -96,50 +121,8 @@ void Update_TELEM(float* telem){
 	telem[10] = Volt_ADC(4); // VBatt rail voltage
 	telem[11] = Temp_ADC(); // Battery temperature
 	
-}
-
-/*========================================================================================*/
-// Function: Update_STATE
-//
-// Author: Chris Thomas
-// Date: 2019-02-03
-// Description: Updates the power state based on the temperature and battery level. This
-//				is based on the power state matrix.
-/*========================================================================================*/
-
-void Update_STATE(char* power, uint8_t state){
-	
-	// String Index
-	int i = 0;
-	
-	// Storage for subsystem states "ON" or "OFF"
-	
-	/* Data layout
-	power[0] => VBatt   Heater
-	power[1] => 5V      Heater
-	power[2] => 8V      Heater
-	power[3] => OBC     Power
-	power[4] => Imager  Power
-	power[5] => GRIPS   Power
-	power[6] => SBand   Power
-	power[7] => UHF     Power	
-	*/
-	
-	// 8 bit mask to check the state of each position
-	uint8_t mask = 0x01;
-	// keep track of the first index
-	
-	while(i < 8){
-		if (mask & state){
-			power[i] = 'Y';
-			mask = mask << 1; // shift left once
-		}
-		else{
-			power[i] = 'N';
-			mask = mask << 1; // shift left once
-		}
-		i++;
-	}
+	// Disable 5V rail
+	Disable_5V(power_state);	
 }
 
 /*========================================================================================*/
@@ -150,14 +133,9 @@ void Update_STATE(char* power, uint8_t state){
 // Description: Determines if a sub System can be powered up
 /*========================================================================================*/
 
-void subSysRqt () {
-	
-	//check if we are in manual mode
-	
-	//if we are service the request
-	//
-	
-} //end subSysRqt
+
+// *** TODO *** //
+
 
 /*========================================================================================*/
 // Function: Update_OBC
@@ -167,7 +145,7 @@ void subSysRqt () {
 // Description: Updates the telemetry information to the OBC.
 /*========================================================================================*/
 
-void Update_OBC(float* telem, char* power){
+void Update_OBC(double* telem, char* power){
 	// Prints a border to the Putty
 	char stars[60] = "/***************************************CubeSat EPS"; // left side of border
 	char stars2[45] = "***************************************/"; // right side of border
@@ -286,4 +264,3 @@ void Update_OBC(float* telem, char* power){
 	UART0_putchar('\n');
 	UART0_putchar('\r');
 }
-

@@ -47,12 +47,12 @@ static wdt_callback_t wdt_timer_callback;
  * call the callback function.
  */
 
-ISR(WDT_vect)
-{
-	if (wdt_timer_callback) {
-		wdt_timer_callback();
-	}
-}
+//ISR(WDT_vect)
+//{
+//	if (wdt_timer_callback) {
+//		wdt_timer_callback();
+//	}
+//}
 
 /**
  * \brief Disable Watchdog.

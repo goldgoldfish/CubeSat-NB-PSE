@@ -215,6 +215,18 @@
     <Compile Include="src\adc_func.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\launcher.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\launcher.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\power_switch.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\power_switch.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\power_state_mat.h">
       <SubType>compile</SubType>
     </Compile>
@@ -296,12 +308,6 @@
     <None Include="src\ASF\common\boards\board.h">
       <SubType>compile</SubType>
     </None>
-    <Compile Include="src\adc.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="src\adc_megaxx0_1_4.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="src\ASF\mega\boards\stk600\rcx_x\init.c">
       <SubType>compile</SubType>
     </Compile>

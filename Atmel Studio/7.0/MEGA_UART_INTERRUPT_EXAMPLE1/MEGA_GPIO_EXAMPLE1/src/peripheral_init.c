@@ -22,7 +22,6 @@
 #include <board.h>
 #include <avr/interrupt.h>
 #include "conf_example.h"
-#include "adc.h"
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -56,10 +55,7 @@ void ALL_init(){
 	// Initialize Watchdog Timer
 	WD_init();
 	
-	// Initialize 5V voltage rail to get readings
-	
 }
-
 
 
 /*========================================================================================*/
@@ -123,13 +119,13 @@ void ADC_init(){
 CLK_init(){
 	
 	// Enable Timer 1
-	TCCR1B = 0x05;
+	TCCR1B = 0x04;
 	
 	// Enable Output Compare Interrupt
 	TIMSK1 = 0x02;
 	
 	// Set Counter to 65,536 clock cycles (MAX)
-	OCR1A = 0x1fff;
+	OCR1A = 0xff;
 	
 	// Set clock to 0
 	TCNT1 = 0x0000;
@@ -151,7 +147,7 @@ void UART0_init(){
 	UBRR0L = UBRRL_VALUE;
 	
 	// Enable TX & RX and Enable RX complete interrupt
-	UCSR0B = 0x18; // enabling bits 4 & 3 (RX & TX) ****** RE-ENABLE INTERRUPT!!!!!!!
+	UCSR0B = 0x98; // enabling bits 4 & 3 (RX & TX) ****** RE-ENABLE INTERRUPT!!!!!!!
 	
 	
 	// Set up the format 8bit no parity
@@ -169,14 +165,14 @@ void UART0_init(){
 
 void WD_init(){
 	
-	// Set Prescaler
+	// Reset the MCU reset flag
+	MCUSR &= 0xf7; // changes bit 3 to 0
 	
-	// Watchdog Reset
-	//wdt_enable(INTERRUPT_SYSTEM_RESET_MODE);
-
-	// Watchdog timer enable
-	//WDTCSR |= 0x10;
-	// Watchdog Change Enable & Prescaler set (4s timer)
-	//WDTCSR |= 0x30;
+	// Enable the interrupt/system reset mode
+	wdt_enable(INTERRUPT_SYSTEM_RESET_MODE);
+	
+	// Set pre-scaler to 8s
+	wdt_set_timeout_period(WDT_TIMEOUT_PERIOD_1024KCLK);
+	
 	
 }

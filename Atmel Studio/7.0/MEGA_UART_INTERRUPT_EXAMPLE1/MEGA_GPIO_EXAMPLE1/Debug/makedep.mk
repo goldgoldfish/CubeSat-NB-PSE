@@ -4,6 +4,10 @@
 
 src\adc_func.c
 
+src\launcher.c
+
+src\power_switch.c
+
 src\power_state_mat.c
 
 src\eeprom.c

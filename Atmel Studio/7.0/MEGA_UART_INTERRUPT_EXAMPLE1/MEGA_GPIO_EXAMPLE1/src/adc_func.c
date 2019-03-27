@@ -16,8 +16,8 @@
 #include "gpio_func.h"
 #include <avr/interrupt.h>
 #include "conf_example.h"
-#include "adc.h"
 #include "uart_func.h"
+#include <util/delay.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -35,6 +35,7 @@
 
 void Change_ADC(int i){
 	if (i < 4){
+		ADCSRB &= 0xf7;
 		ADMUX = 0x00 + i;
 	}
 	else{
@@ -57,9 +58,9 @@ uint16_t Read_ADC(){
 	ADCSRA |= 0x40;
 	
 	// Wait until conversion is done
-	while(ADCSRA & (1 << ADSC));
-
-	return(ADC);
+	while(ADCSRA & 0x40);
+	
+	return ADC;
 }
 
 /*========================================================================================*/
@@ -130,25 +131,26 @@ float Volt_ADC(int Volt_num){
 float Amp_ADC(int Amp_num){
 	int ADC_num = 0; // initialize ADC number to check
 	float val = 0; // initialize the voltage value to 0 V
+	float zero[6] = {0.515, 0.542, 0.523, 0.505, 0.508, 0.530};
 	int i = 0;
 	
 	// Voltage rail current 8V, 5V, 3V3-1, 3V3-2 respectively
 	if(Amp_num < 4){
 		ADC_num = Amp_num;
-		while(i < 1){
-			val = (((Check_ADC(ADC_num) / 1024) * 3.3) - 0.494) / 0.4;
+		while(i < 25){
+			val += (((Check_ADC(ADC_num) / 1024) * 3.3) - zero[Amp_num]) / 0.4;
 			i++;
 		}
-		val = val/1;
+		val = val/25;
 	}
 	// Solar current and Battery current, respectively
 	else if(Amp_num == 4 || Amp_num == 5){
 		ADC_num = Amp_num + 5;
-		while(i < 1){
-			val = (((Check_ADC(ADC_num) / 1024) * 3.3) - 0.494) / 0.4;
+		while(i < 25){
+			val += (((Check_ADC(ADC_num) / 1024) * 3.3) - zero[Amp_num]) / 0.4;
 			i++;
 		}
-		val = val/1;
+		val = val/25;
 	}
 	return val;
 }
@@ -193,6 +195,16 @@ float Temp_ADC(){
 		}
 		i++;
 	}
+	
+	// Disable temperature Sensor
+	Set_GPIO(1);
+	
+	// Pull GPIO 4,5 & 6 low
+	Clear_GPIO(4);
+	Clear_GPIO(5);
+	Clear_GPIO(6);
+	
+	// Divide temperature measurements by 3 to get an average (To be discussed)
 	return temp/3;
 }
 
@@ -204,11 +216,12 @@ float Temp_ADC(){
 // Description: Temperature measurement via ADC.
 /*========================================================================================*/
 
-int SoC_ADC(float volt, float amp){
+float SoC_ADC(float volt, float amp){
 	// return value
-	int soc = 0;
+	float soc = 0;
 	
 	// Check Battery voltage and current
+	
 	
 	// Lookup table
 	if (amp < 0.6 && amp > 0){
@@ -290,7 +303,7 @@ int SoC_ADC(float volt, float amp){
 		} //end else
 	}
 	else{
-		UART0_putstring("Battery Charging");
+		//UART0_putstring("Battery Charging");
 	}
 	return soc;
 }

@@ -17,15 +17,12 @@
 #define OBC_COMM_H_
 
 // Takes commands from OBC and calls the corresponding function
-void commandDecode (uint8_t* telem);
+void commandDecode (char* obc_command, double* telem, uint8_t mode, uint8_t power_state);
 
 // Updates all telemetry information regarding voltage, current and temperature
-void Update_TELEM(float* telem);
-
-// Updates the power state based on the temperature and battery level
-void Update_STATE(char* power, uint8_t state);
+void Update_TELEM(double* telem, uint8_t power_state);
 
 // Updates the OBC will all telemetry data stored on microcontroller
-void Update_OBC(float* telem, char* power);
+void Update_OBC(double* telem, char* power);
 
 #endif /* OBC_COMM_H_ */

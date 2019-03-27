@@ -11,9 +11,21 @@
 // initialize the power matrix
 /*========================================================================================*/
 
+#include <stdint.h>
+
 #ifndef POWER_STATE_MAT_H_
 #define POWER_STATE_MAT_H_
 
-void pwrMatInit();
+// Initializes power state matrix to the default setting
+void pwrMatInit(uint8_t* pwrMat);
+
+// Checks the power state of the system based on Battery voltage and current readings
+int PowerStateCheck(float SOC, float temp);
+
+// Updates the power state to string form for ease of use
+void Update_STATE(char* power, uint8_t state);
+
+// Set Mode of the EPS (Auto/Manual)
+void Set_MODE(uint8_t mode);
 
 #endif /* power_state_mat_H_ */

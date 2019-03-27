@@ -25,7 +25,7 @@ char UART0_getchar();
 void UART0_putstring(char *string);
 
 // Reads strings via UART0 using getchar
-char* UART0_getstring();
+void UART0_getstring(char* message);
 
 
 #endif /* UART_FUNC_H_ */
