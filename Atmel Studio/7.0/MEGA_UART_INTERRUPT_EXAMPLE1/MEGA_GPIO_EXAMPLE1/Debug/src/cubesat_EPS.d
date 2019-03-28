@@ -28,8 +28,8 @@ src/cubesat_EPS.d src/cubesat_EPS.o: ../src/cubesat_EPS.c \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\stdio.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stdarg.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\float.h \
- ../src/peripheral_init.h ../src/adc_func.h ../src/eeprom.h \
- ../src/uart_func.h ../src/gpio_func.h ../src/obc_comm.h \
+ ../src/wdt_megarf.h ../src/peripheral_init.h ../src/adc_func.h \
+ ../src/eeprom.h ../src/uart_func.h ../src/gpio_func.h ../src/obc_comm.h \
  ../src/power_state_mat.h ../src/power_switch.h ../src/launcher.h
 
 ../src/ASF/mega/utils/compiler.h:
@@ -93,6 +93,8 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stdarg.h:
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\float.h:
+
+../src/wdt_megarf.h:
 
 ../src/peripheral_init.h:
 

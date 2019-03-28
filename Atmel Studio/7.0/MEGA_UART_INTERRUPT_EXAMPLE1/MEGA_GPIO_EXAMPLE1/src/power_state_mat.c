@@ -184,33 +184,14 @@ void Update_STATE(char* power, uint8_t state){
 	
 	while(i < 8){
 		if (mask & state){
-			power[i] = 'Y';
+			power[i] = 'y';
 			mask = mask << 1; // shift left once
 		}
 		else{
-			power[i] = 'N';
+			power[i] = 'n';
 			mask = mask << 1; // shift left once
 		}
 		i++;
 	}
 }
 
-/*========================================================================================*/
-// Function: Set_MODE
-//
-// Author: Chris Thomas
-// Date: 2019-03-25
-// Description: Sets the mode of the EPS. A value of 0 will be interpreted as manual mode.
-//				Anything other than 0 will be interpreted as autonomous mode.
-/*========================================================================================*/
-
-void Set_MODE(uint8_t mode){
-	
-	// Check if the value of mode is greater than 0
-	if(mode){
-		mode = 1; // autonomous mode
-	}
-	else{
-		mode = 0; // manual mode
-	}
-}

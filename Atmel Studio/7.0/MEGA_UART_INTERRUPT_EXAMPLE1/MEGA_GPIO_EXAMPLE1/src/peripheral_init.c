@@ -173,6 +173,4 @@ void WD_init(){
 	
 	// Set pre-scaler to 8s
 	wdt_set_timeout_period(WDT_TIMEOUT_PERIOD_1024KCLK);
-	
-	
 }

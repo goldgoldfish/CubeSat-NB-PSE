@@ -88,4 +88,5 @@ void UART0_getstring(char* message){
 		i++;
 		prev = UART0_getchar();
 	}
+	message[i] = '\0';
 }

@@ -187,10 +187,10 @@ void Disable_VBatt(uint8_t power_state){
 //				manual mode.
 /*========================================================================================*/
 
-void Update_LOADS(uint8_t power_state){
+void Update_LOADS(uint8_t power_state, uint8_t* power_pointer){
 	
 	// Heater switching
-	heater_SWITCH(power_state);
+	heater_SWITCH(power_state, power_pointer);
 	
 	// OBC switching
 	obc_SWITCH(power_state);
@@ -219,7 +219,7 @@ void Update_LOADS(uint8_t power_state){
 //				turned on, all heaters are turned off.
 /*========================================================================================*/
 
-void heater_SWITCH(uint8_t power_state){
+void heater_SWITCH(uint8_t power_state, uint8_t* power_pointer){
 	
 	//*****NOTE*****//
 	// Only one heater can be enabled at a time.
@@ -232,19 +232,31 @@ void heater_SWITCH(uint8_t power_state){
 	uint8_t mask_heater_8V = 0b00000100;
 	
 	// Check which of the heaters is turned on
+	
+	// Vbatt Heater
 	if((power_state & mask_heater_VBatt) && !(power_state & (mask_heater_5V | mask_heater_8V))){
+		Disable_5V(power_state); // disable 5V rail if not needed
+		Disable_8V(power_state); // disable 8V rail if not needed
 		Clear_GPIO(3); // Turn off 5V heater
 		Clear_GPIO(2); // Turn off 8V heater
 		Enable_VBatt();
 		Set_GPIO(0);  // Enable VBatt heater
 	}
+	
+	// 5V Heater
 	else if((power_state & mask_heater_5V) && !(power_state & (mask_heater_VBatt | mask_heater_8V))){
+		Disable_VBatt(power_state); // disable VBatt rail if not needed
+		Disable_8V(power_state); // disable 8V rail if not needed
 		Clear_GPIO(0); // Turn off VBatt heater
 		Clear_GPIO(2); // Turn off 8V heater
 		Enable_5V();
 		Set_GPIO(3); // Enable 5V heater
 	}
+	
+	// 8V Heater
 	else if((power_state & mask_heater_8V) && !(power_state & (mask_heater_VBatt | mask_heater_5V))){
+		Disable_VBatt(power_state); // disable VBatt rail if not needed
+		Disable_5V(power_state); // disable 5V rail if not needed
 		Clear_GPIO(0); // Turn off VBatt heater
 		Clear_GPIO(3); // Turn off 5V heater
 		Enable_8V();
@@ -260,8 +272,10 @@ void heater_SWITCH(uint8_t power_state){
 		Disable_VBatt(power_state);
 		Disable_5V(power_state);
 		Disable_8V(power_state);
+		
+		// Change power state as they are all turned off now
+		power_pointer[0] &= 0b11111000;
 	}
-	
 }
 
 /*========================================================================================*/

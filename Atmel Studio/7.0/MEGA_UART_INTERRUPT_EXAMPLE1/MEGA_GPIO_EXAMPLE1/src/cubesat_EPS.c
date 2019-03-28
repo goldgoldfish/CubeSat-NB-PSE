@@ -21,6 +21,7 @@
 #include <avr/io.h>
 #include <stdio.h>
 #include <float.h>
+#include "wdt_megarf.h"
 
 // User Defined Libraries
 #include "peripheral_init.h"
@@ -45,7 +46,7 @@
 
 // Telemetry information storage
 double telem[12];
-char power[8];
+char power[9];
 
 // stat of charge
 float soc = 0;
@@ -60,13 +61,13 @@ uint8_t pwrMat[25];
 int state_num = 0;
 
 // Power State
-uint8_t state = 0;
-uint8_t prev_state = 0;
+uint8_t power_state[1] = {0};
+uint8_t prev_state[1] = {0};
 
 // Demo variables
 char obc_command[20]; // <----- **** Get rid of this soon *****///
 char fake;
-uint8_t mode = 0;
+uint8_t mode[1] = {1}; // assumes manual mode
 
 uint8_t launch = 0x00;
 uint8_t check = 0x01;
@@ -87,35 +88,34 @@ ISR(TIMER1_COMPA_vect){
 	cli();
 	
 	// Update Telemetry information
-	Update_TELEM(telem, state);
+	Update_TELEM(telem, power_state[0]);
 	
 	// Check Power State
 	temp = telem[11];
 	soc = SoC_ADC(telem[10],telem[4]);
 	
-	// Update power state
-	if(mode){
+	if(mode[0]){
+		// Update power state
 		state_num = PowerStateCheck(soc, temp);
-		state = pwrMat[state_num];
+		power_state[0] = pwrMat[state_num];
 		// Update the state of the loads
-		Update_STATE(power,state);
-		Update_LOADS(state);
+		Update_STATE(power, power_state[0]);
+		Update_LOADS(power_state[0], power_state);
 		Update_OBC(telem, power);
 	}
 	else{
-		Update_LOADS(state);
-		Update_STATE(power,state);
+		Update_STATE(power, power_state[0]);
+		Update_LOADS(power_state[0], power_state);
 		Update_OBC(telem, power);
 	}
-	
-		
+
 	// Update OBC with newly acquired info
 	
 	// Print the state of charge and power matrix index
 	
 	
 	// Save previous states for less computation
-	prev_state = state;
+	prev_state[0] = power_state[0];
 	prev_temp  = temp;
 	prev_soc = soc;
 	
@@ -128,9 +128,13 @@ ISR(USART0_RX_vect){
 	
 	cli();
 	
+	//wdt_disable();
+	
 	fake = UART0_getchar();
-	commandDecode(obc_command, telem, mode, state);
-		
+	commandDecode(obc_command, telem, mode, power_state, power);
+	
+	//wdt_enable(INTERRUPT_SYSTEM_RESET_MODE);
+	
 	sei();
 }
 

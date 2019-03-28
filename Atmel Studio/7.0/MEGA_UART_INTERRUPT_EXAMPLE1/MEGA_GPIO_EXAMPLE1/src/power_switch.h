@@ -17,7 +17,7 @@
 #define INCFILE1_H_
 
 // Switches all loads based on power state
-void Update_LOADS(uint8_t power_state);
+void Update_LOADS(uint8_t power_state, uint8_t* power_pointer);
 
 //*****NOTE*****//
 // The 3V3-2 rail powers the microcontroller indefinitely and cannot be switched
@@ -47,7 +47,7 @@ void Disable_8V(uint8_t power_state);
 void Disable_VBatt(uint8_t power_state);
 
 // Switches power to the heaters (only one can be enabled at a time)
-void heater_SWITCH(uint8_t power_state);
+void heater_SWITCH(uint8_t power_state, uint8_t* power_pointer);
 
 // Switches power to OBC
 void obc_SWITCH(uint8_t power_state);
