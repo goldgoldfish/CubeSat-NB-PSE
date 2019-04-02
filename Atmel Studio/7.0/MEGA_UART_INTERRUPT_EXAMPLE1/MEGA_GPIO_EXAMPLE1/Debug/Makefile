@@ -53,6 +53,7 @@ SUBDIRS :=  \
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
 ../src/adc_func.c \
+../src/fault.c \
 ../src/launcher.c \
 ../src/power_switch.c \
 ../src/power_state_mat.c \
@@ -74,6 +75,7 @@ ASM_SRCS +=
 
 OBJS +=  \
 src/adc_func.o \
+src/fault.o \
 src/launcher.o \
 src/power_switch.o \
 src/power_state_mat.o \
@@ -88,6 +90,7 @@ src/cubesat_EPS.o
 
 OBJS_AS_ARGS +=  \
 src/adc_func.o \
+src/fault.o \
 src/launcher.o \
 src/power_switch.o \
 src/power_state_mat.o \
@@ -102,6 +105,7 @@ src/cubesat_EPS.o
 
 C_DEPS +=  \
 src/adc_func.d \
+src/fault.d \
 src/launcher.d \
 src/power_switch.d \
 src/power_state_mat.d \
@@ -116,6 +120,7 @@ src/cubesat_EPS.d
 
 C_DEPS_AS_ARGS +=  \
 src/adc_func.d \
+src/fault.d \
 src/launcher.d \
 src/power_switch.d \
 src/power_state_mat.d \
@@ -143,6 +148,13 @@ LINKER_SCRIPT_DEP+=
 
 # AVR32/GNU C Compiler
 src/adc_func.o: ../src/adc_func.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 5.4.0
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -DDEBUG -DBOARD=STK600_MEGA  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\include" -I"../src/ASF/common/boards" -I"../src/ASF/mega/utils/preprocessor" -I"../src/ASF/mega/utils" -I"../src/ASF/common/utils" -I"../src" -I"../src/config"  -O1 -fdata-sections -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g3 -Wall -mmcu=atmega640 -c -std=gnu99 -fno-strict-aliasing -Wstrict-prototypes -Wmissing-prototypes -Werror-implicit-function-declaration -Wpointer-arith -mrelax -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+src/fault.o: ../src/fault.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -DDEBUG -DBOARD=STK600_MEGA  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\include" -I"../src/ASF/common/boards" -I"../src/ASF/mega/utils/preprocessor" -I"../src/ASF/mega/utils" -I"../src/ASF/common/utils" -I"../src" -I"../src/config"  -O1 -fdata-sections -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g3 -Wall -mmcu=atmega640 -c -std=gnu99 -fno-strict-aliasing -Wstrict-prototypes -Wmissing-prototypes -Werror-implicit-function-declaration -Wpointer-arith -mrelax -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

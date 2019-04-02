@@ -75,13 +75,14 @@ void Enable_8V(){
 // Date: 2019-03-24
 // Description: Enables VBatt rail power. Waits for transient to finish.
 /*========================================================================================*/
+
 void Enable_VBatt(){
 
-	// Set 8V rail for readings
-	Set_GPIO(16);
+	// Enable VBatt to Rails
+	Set_GPIO(21);
 
 	while(Volt_ADC(4) < 2.5){
-		// Wait until 8V rail transient is finished
+		// Wait until VBatt rail transient is finished
 	}
 }
 
@@ -166,10 +167,10 @@ void Disable_8V(uint8_t power_state){
 void Disable_VBatt(uint8_t power_state){
 	
 	// 5V rail subsystem mask
-	uint8_t mask_8V = 0b00000001;
+	uint8_t mask_VBatt = 0b00000001;
 	
 	// Check for subsystems using the 5V rail
-	if(power_state & mask_8V){
+	if(power_state & mask_VBatt){
 		// do not turn the rail off
 	}
 	else{

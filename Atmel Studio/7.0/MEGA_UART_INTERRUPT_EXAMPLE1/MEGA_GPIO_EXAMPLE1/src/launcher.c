@@ -14,6 +14,7 @@
 #include "launcher.h"
 #include "eeprom.h"
 #include "wdt_megarf.h"
+#include "uart_func.h"
 #include <util/delay.h>
 #include <stdint.h>
 
@@ -30,7 +31,13 @@ void launch_state(){
 	
 	// Check if the satellite has been launched
 	if(launch_check()){
-		// don't set the timer
+		UART0_putstring("I have already been launched.");
+		UART0_putchar('\n');
+		UART0_putchar('\r');
+		UART0_putstring("Returning to normal operation...");
+		UART0_putchar('\n');
+		UART0_putchar('\n');
+		UART0_putchar('\r');
 	}
 	else{
 		launch_timer();
@@ -93,7 +100,7 @@ uint8_t launch_check(){
 }
 
 /*========================================================================================*/
-// Function: reset_launch
+// Function: launch_reset
 //
 // Author: Chris Thomas
 // Date: 2019-03-26
@@ -117,12 +124,12 @@ void launch_reset(){
 	wdt_enable(SYSTEM_RESET_MODE);
 	
 	// Change the tiemout period to 1.0s			 
-	wdt_set_timeout_period(WDT_TIMEOUT_PERIOD_128KCLK); // timeout set from 1024k to 128k
+	wdt_set_timeout_period(WDT_TIMEOUT_PERIOD_2KCLK); // timeout set from 1024k to 128k
 	
 }
 
 /*========================================================================================*/
-// Function: timer_launch
+// Function: launch_timer
 //
 // Author: Chris Thomas
 // Date: 2019-03-26
@@ -133,5 +140,20 @@ void launch_reset(){
 void launch_timer(){
 	
 	// Delay the start-up by 8 seconds
-	_delay_ms(8000);
+	int i = 9;
+	UART0_putstring("Starting Launch Timer");
+	UART0_putchar('\n');
+	UART0_putchar('\r');
+	while(i > 0){
+		UART0_putchar(i + 0x30); // prints the character value of
+		_delay_ms(1000);
+		UART0_putchar('\n');
+		UART0_putchar('\r');
+		i--; 
+	}
+	UART0_putstring("Timer complete. Entering normal operation.");
+	UART0_putchar('\n');
+	UART0_putchar('\n');
+	UART0_putchar('\r');
 }
+		

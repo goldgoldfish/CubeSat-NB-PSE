@@ -4,6 +4,8 @@
 
 src\adc_func.c
 
+src\fault.c
+
 src\launcher.c
 
 src\power_switch.c

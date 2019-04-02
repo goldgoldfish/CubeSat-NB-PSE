@@ -34,6 +34,7 @@
 #include "power_state_mat.h"
 #include "power_switch.h"
 #include "launcher.h"
+#include "fault.h"
 
 /*========================================================================================*/
 // Author: Chris Thomas
@@ -60,14 +61,19 @@ float prev_temp = 0;
 uint8_t pwrMat[25];
 int state_num = 0;
 
+// New Power Matrix
+char newPwrMat[5];
+
 // Power State
 uint8_t power_state[1] = {0};
 uint8_t prev_state[1] = {0};
+	
+// Watchdog variable
+uint8_t watchdog = 0;
 
-// Demo variables
-char obc_command[20]; // <----- **** Get rid of this soon *****///
+// UART Interrupt stuff
 char fake;
-uint8_t mode[1] = {1}; // assumes manual mode
+uint8_t mode[1] = {1}; // assumes autonomous mode
 
 uint8_t launch = 0x00;
 uint8_t check = 0x01;
@@ -101,12 +107,12 @@ ISR(TIMER1_COMPA_vect){
 		// Update the state of the loads
 		Update_STATE(power, power_state[0]);
 		Update_LOADS(power_state[0], power_state);
-		Update_OBC(telem, power);
+		Update_OBC(telem, power, state_num, mode[0]);
 	}
 	else{
 		Update_STATE(power, power_state[0]);
 		Update_LOADS(power_state[0], power_state);
-		Update_OBC(telem, power);
+		Update_OBC(telem, power, state_num, mode[0]);
 	}
 
 	// Update OBC with newly acquired info
@@ -131,7 +137,7 @@ ISR(USART0_RX_vect){
 	//wdt_disable();
 	
 	fake = UART0_getchar();
-	commandDecode(obc_command, telem, mode, power_state, power);
+	commandDecode(telem, mode, power_state, power, newPwrMat, state_num);
 	
 	//wdt_enable(INTERRUPT_SYSTEM_RESET_MODE);
 	
@@ -146,14 +152,20 @@ ISR(WDT_vect){
 
 int main(void){
 	
+	// Check the Watchdog right away
+	watchdog = MCUSR & 0x08;
+
+	// Now initialize all peripherals
 	ALL_init();
 	
 	// Disable Interrupts upon start
 	cli();
 	
-	UART0_putstring("I have been reset");
+	// Check the reason for reset
+	fault_check(watchdog);
 	
-	launch_state();
+	// Check State of Launch
+	launch_state();	
 	
 	// Update power state matrix
 	pwrMatInit(pwrMat);

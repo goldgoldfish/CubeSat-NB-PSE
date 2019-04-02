@@ -83,7 +83,7 @@ void UART0_getstring(char* message){
 	prev = UART0_getchar();
 	
 	// Check previous value for terminator (SPACE)
-	while(prev != ' '){
+	while(prev != 0x0D){
 		message[i] = prev; // save the char if it isn't the terminator
 		i++;
 		prev = UART0_getchar();

@@ -20,6 +20,8 @@
 #include <string.h>
 #include "uart_func.h"
 #include "compiler.h"
+#include "wdt_megarf.h"
+#include "eeprom.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,7 +35,42 @@
 // Date: 2019-03-17
 // Description: Decodes commands from the OBC and calls their corresponding function.		
 /*========================================================================================*/
-void commandDecode (char* obc_command, double* telem, uint8_t* mode, uint8_t* power_state, char* power){
+void commandDecode (double* telem, uint8_t* mode, uint8_t* power_state, char* power, uint8_t* newPwrMat, uint8_t state_num){
+	
+	// Erase the first echoed letter
+	UART0_putchar('\b'); // ascii code for backspace
+	
+	// List of OBC Commands
+	// OBC Commands
+	char obc_command[8][20] = {"TelemRqt", "SubSysRqt",
+							   "PwrMatEdit", "PwrStateRqt", "ModeChange",
+							   "LaunchReset", "HelloCheck", "Reset"};
+							   
+	// Print list of commands for the user
+	int i = 0; // increment
+	
+	// Printing the list cleanly
+	UART0_putstring("List of available OBC Commands: ");
+	UART0_putchar('\n');
+	UART0_putchar('\n');
+	UART0_putchar('\r');
+	// print all seven commands
+	while(i < 8){
+		UART0_putchar(0x31 + i); // the '1' plus the command index
+		UART0_putstring(" -> ");
+		UART0_putstring(obc_command[i]);
+		UART0_putchar('\n');
+		UART0_putchar('\r');
+		i++;
+	}
+	
+	// Prompt the User
+	UART0_putchar('\n');
+	UART0_putstring("Enter the desired command:");
+	UART0_putchar('\n');
+	UART0_putchar('\n');
+	UART0_putchar('\r');
+	UART0_putstring("> ");		
 	
 	// Prompt user to try again if incorrect entry
 	int incorrect = 1;	
@@ -41,75 +78,119 @@ void commandDecode (char* obc_command, double* telem, uint8_t* mode, uint8_t* po
 	// Check for command in list, if not in list, prompt user again
 	
 	while(incorrect){
-		// Receive Command from OBC
-		UART0_getstring(obc_command);
-		
-		// Print the Command for TESTING
-		UART0_putstring(obc_command);
+		// Receive command index from OBC
+		int com_ind = UART0_getchar() - 0x31; // negate the '0' char value to get the index
 		UART0_putchar('\n');
 		UART0_putchar('\n');
 		UART0_putchar('\r');
 		
-		if (strlen(obc_command) > 20) {
-			UART0_putstring("Error! Command larger than 20 chars");
+		// Print the selected Command
+		UART0_putstring("You have Selected: ");
+		UART0_putstring(obc_command[com_ind]);
+		UART0_putchar('\n');
+		UART0_putchar('\n');
+		UART0_putchar('\r');
+			
+		incorrect = 0; // assume the user inputs the correct command until it isn't found
+			
+		if (strcmp(obc_command[com_ind], "TelemRqt") == 0) {
+			UART0_putstring("Updating Telemetry Information");
+			UART0_putchar('\n');
+			UART0_putchar('\n');
+			UART0_putchar('\r');
+			Update_TELEM(telem, power_state);
+			Update_OBC(telem, power, state_num, mode[0]);
+			//send telem
 		} //end if
-		else {
-			
-			incorrect = 0; // assume the user inputs the correct command until it isn't found
-			
-			if (strcmp(obc_command, "TelemRqt") == 0) {
-				Update_TELEM(telem, power_state);
-				//send telem
-			} //end if
-			else if (strcmp(obc_command, "SubSysRqt") == 0) {	
-				if(!mode[0]){
-					// power_state = some new value (input yet to be determined, handle in GUI)
-					UART0_putstring("Enter the desired state: ");
-					UART0_putchar('\n');
-					UART0_putchar('\n');
-					UART0_putchar('\r');
-					UART0_getstring(power);
-					Manual_STATE(power, power_state);
-					UART0_putstring(power);
-					UART0_putchar('\n');
-					UART0_putchar('\n');
-					UART0_putchar('\r');
-				}
-				else{
-					// Tell the user the EPS is still in autonomous mode and it must be changed
-				}
-			} //else if
-			else if (strcmp(obc_command, "PwrMatEdit") == 0) {
-				//edit the power state matrix
-			} //end else if
-			else if (strcmp(obc_command, "PwrMatRqt") == 0) {
-				//send the power state matrix cell to the obc
-			} //end else if
-			else if (strcmp(obc_command, "ModeChange") == 0) {
-				// The character 0 must be sent to go into manual mode
-					mode[0] = !mode[0]; // toggle the current mode
-				//change or update the mode of the micro
-				// In this state do not update the power state, simply remain in the one specified
-				// Have an SOC thing here
-			} //end else if
-			else if (strcmp(obc_command, "LaunchReset") == 0) {
-				launch_reset();
-				//reset the system to a pre-launch config
-				// Use the watchdog to reset the system
-			} //end else if
-			else if (strcmp(obc_command, "HelloCheck") == 0) {
-				//say hello
-			} //end else if
-			else {
-				incorrect = 1;
-				UART0_putstring("Try again Mr. Poopy Bum");
+		else if (strcmp(obc_command[com_ind], "SubSysRqt") == 0) {	
+			if(!mode[0]){
+				// power_state = some new value (input yet to be determined, handle in GUI)
+				UART0_putstring("Enter the desired state: ");
 				UART0_putchar('\n');
 				UART0_putchar('\n');
 				UART0_putchar('\r');
-				//UART0_putstring(strcat("Error! The following command isn't recognized: ", obc_command));
-			} //end else
+				UART0_putstring("> ");	
+				UART0_getstring(power);
+				Manual_STATE(power, power_state);
+				//UART0_putstring(power);  *****---->>> Putty echo now enabled not need
+				Update_LOADS(power_state[0], power_state);
+				UART0_putchar('\n');
+				UART0_putchar('\n');
+				UART0_putchar('\r');
+			}
+			else{
+				UART0_putstring("I am currently in Autonomous mode.");
+				UART0_putchar('\n');
+				UART0_putchar('\n');
+				UART0_putchar('\r');
+				UART0_putstring("Select ModeChange [5] before attempting to change the power state.");
+				UART0_putchar('\n');
+				UART0_putchar('\n');
+				UART0_putchar('\r');
+				// Tell the user the EPS is still in autonomous mode and it must be changed
+			}
+		} //else if
+		else if (strcmp(obc_command[com_ind], "PwrMatEdit") == 0) {
+			UART0_putstring("Enter the first dimension (rows): ");
+			UART0_putchar('\n');
+			UART0_putchar('\n');
+			UART0_putchar('\r');
+			UART0_putstring("> "); 
+			char dim1 = UART0_getchar();
+			UART0_putchar('\n');
+			UART0_putchar('\n');
+			UART0_putchar('\r'); 
+			UART0_putstring("Enter the second dimension (columns): ");
+			UART0_putchar('\n');
+			UART0_putchar('\n');
+			UART0_putchar('\r');
+			UART0_putstring("> ");
+			char dim2 = UART0_getchar();
+			pwrMatChange(dim1 - 0x30, dim2 - 0x30, newPwrMat);
+		} //end else if
+		else if (strcmp(obc_command[com_ind], "PwrStateRqt") == 0) {
+			//send the power state matrix cell to the obc
+		} //end else if
+		else if (strcmp(obc_command[com_ind], "ModeChange") == 0) {
+			// The character 0 must be sent to go into manual mode
+			mode[0] = !mode[0]; // toggle the current mode
+			if(!mode[0]){
+				UART0_putstring("I am now in Manual mode.");
+			}
+			else{
+				UART0_putstring("I am now in Autonomous mode.");
+			}
+			UART0_putchar('\n');
+			UART0_putchar('\n');
+			UART0_putchar('\r');
+			//change or update the mode of the micro
+			// In this state do not update the power state, simply remain in the one specified
+			// Have an SOC thing here
+		} //end else if
+		else if (strcmp(obc_command[com_ind], "LaunchReset") == 0) {
+			launch_reset();
+			//reset the system to a pre-launch config
+			// Use the watchdog to reset the system
+		} //end else if
+		else if (strcmp(obc_command[com_ind], "HelloCheck") == 0) {
+			UART0_putstring("Oh Hello, I am CubeSat EPS. What's your Zodiac sign?");
+			UART0_putchar('\n');
+			UART0_putchar('\n');
+			UART0_putchar('\r');
+		} //end else if
+		else if(strcmp(obc_command[com_ind], "Reset") == 0){
+			Manual_RESET(); // Reset the EPS without changing launch state
+		}
+		else {
+			incorrect = 1;
+			UART0_putstring("Command Unrecognized. Please Try again.");
+			UART0_putchar('\n');
+			UART0_putchar('\n');
+			UART0_putchar('\r');
+			UART0_putchar('>');
+			//UART0_putstring(strcat("Error! The following command isn't recognized: ", obc_command));
 		} //end else
-	}
+	} //end while
 } //end commandDecode
 
 /*========================================================================================*/
@@ -151,18 +232,6 @@ void Update_TELEM(double* telem, uint8_t power_state){
 }
 
 /*========================================================================================*/
-// Function: subSysRqt
-//
-// Author: Ben Wedemire
-// Date: 2019-03-17
-// Description: Determines if a sub System can be powered up
-/*========================================================================================*/
-
-
-// *** TODO *** //
-
-
-/*========================================================================================*/
 // Function: Update_OBC
 //
 // Author: Chris Thomas
@@ -170,10 +239,10 @@ void Update_TELEM(double* telem, uint8_t power_state){
 // Description: Updates the telemetry information to the OBC.
 /*========================================================================================*/
 
-void Update_OBC(double* telem, char* power){
+void Update_OBC(double* telem, char* power, uint8_t state_num, uint8_t mode){
 	// Prints a border to the Putty
-	char stars[60] = "/***************************************CubeSat EPS"; // left side of border
-	char stars2[45] = "***************************************/"; // right side of border
+	char stars[100] = "/********************************************************************CubeSat EPS"; // left side of border
+	char stars2[100] = "********************************************************************/"; // right side of border
 	char* border; // complete border top and bottom
 	border = strcat(stars,stars2);
 	
@@ -186,18 +255,25 @@ void Update_OBC(double* telem, char* power){
 	UART0_putchar('\r');
 	
 	// String Initializations
-	char loads[8][10] = {"Heater 1", "Heater 2", "Heater 3", "OBC", "Imager", "GRIPS", "S-Band", "UHF"};
-	char sensors[12][10] = {"3V3-1 [A]", "3V3-2 [A]", "5V [A]", "8V [A]", "VBatt [A]", "Solar [A]",
-							"3V3-1 [V]", "3V3-2 [V]", "5V [V]", "8V [V]", "VBatt [V]", "Temp [C]"};
+	char loads[8][20] = {"Heater 1 (VBatt)", "Heater 2 (5V)", "Heater 3 (8V)", 
+						 "OBC", "Imager", "GRIPS", "S-Band", "UHF"};
+						 
+	char sensors[12][20] = {"3V3-1 Rail [A]", "3V3-2 Rail [A]", "5V Rail [A]", 
+							"8V Rail [A]", "Battery Rail [A]", "Solar Input [A]",
+							"3V3-1 Rail [V]", "3V3-2 Rail [V]", "5V Rail [V]", "8V Rail [V]",
+							"Battery Rail [V]", "Temperature [C]"};
+							
+	char sections[3][22] = {"CURRENT", "VOLTAGE", "LOADS"};
 							
 	// Doing to the spacing correctly						
-	int spacing = 15;
+	int spacing = 20;
 	int spaces = 0;
 	int spaces2 = 0; // for inner loops
 	int l_incr = 0; // load increment (8)
 	int s_incr = 0; // sensor increment (12)
-	int i; // increment for telemetry (0 to 6, then 6 to 12)
+	int i = 0; // increment for telemetry (0 to 6, then 6 to 12)
 	char measure[10]; // used for sprintf
+	int section_incr = 0; // used for the section titles
 	
 	// Print the telemetry information
 	while (s_incr < 12){
@@ -213,7 +289,7 @@ void Update_OBC(double* telem, char* power){
 					UART0_putchar(' ');
 					spaces2--;
 				}
-				sprintf(measure,"%f",telem[i]);
+				sprintf(measure,"%.3f",telem[i]);
 				UART0_putstring(measure);
 				i++;
 				spaces2 = spacing - strlen(measure);
@@ -226,6 +302,20 @@ void Update_OBC(double* telem, char* power){
 		
 		// Put the titles in normally
 		// re-initialize the spaces
+		if(s_incr == 0){
+			UART0_putstring(sections[section_incr]);
+			UART0_putchar('\n');
+			UART0_putchar('\n');
+			UART0_putchar('\r');
+			section_incr++;
+		}
+		else if(s_incr == 6){
+			UART0_putstring(sections[section_incr]);
+			UART0_putchar('\n');
+			UART0_putchar('\n');
+			UART0_putchar('\r');
+			section_incr++;
+		}
 		while(spaces){
 			UART0_putchar(' ');
 			spaces--;
@@ -245,7 +335,7 @@ void Update_OBC(double* telem, char* power){
 					UART0_putchar(' ');
 					spaces2--;
 				}
-				sprintf(measure,"%f",telem[i]);
+				sprintf(measure,"%.2f",telem[i]);
 				UART0_putstring(measure);
 				i++;
 				spaces2 = spacing - strlen(measure);
@@ -257,6 +347,10 @@ void Update_OBC(double* telem, char* power){
 	
 	// Print the Load Titles
 	spaces = 0; // re initialize spaces
+	UART0_putchar('\n');
+	UART0_putchar('\n');
+	UART0_putchar('\r');
+	UART0_putstring(sections[section_incr]);
 	UART0_putchar('\n');
 	UART0_putchar('\n');
 	UART0_putchar('\r');
@@ -281,35 +375,71 @@ void Update_OBC(double* telem, char* power){
 			UART0_putchar(' ');
 			spaces--;
 		}
-		UART0_putchar(power[l_incr]);
+		if(power[l_incr] == 'y'){
+			UART0_putstring("ON");
+			spaces = spacing - 2;			
+		}
+		else{
+			UART0_putstring("OFF");
+			spaces = spacing - 3;
+		}
 		l_incr++;
-		spaces = spacing - 1;
+	}
+	UART0_putchar('\n');
+	UART0_putchar('\n');
+	UART0_putchar('\r');
+	
+	// Print the State Number
+	char state[5]; // character array for sprintf()
+	UART0_putstring("STATE #");
+	UART0_putchar('\n');
+	UART0_putchar('\r');
+	sprintf(state,"%d",state_num);
+	UART0_putstring(state);
+	UART0_putchar('\n');
+	UART0_putchar('\n');
+	UART0_putchar('\r');
+	
+	// Print the mode of operation (auto/manual)
+	UART0_putstring("MODE");
+	UART0_putchar('\n');
+	UART0_putchar('\r');
+	if(mode){
+		UART0_putstring("Autonomous");
+	}
+	else{
+		UART0_putstring("Manual");
 	}
 	UART0_putchar('\n');
 	UART0_putchar('\n');
 	UART0_putchar('\r');
 }
 
-void Manual_STATE(char* power, uint8_t* power_state){
+/*========================================================================================*/
+// Function: Manual_Reset
+//
+// Author: Chris Thomas
+// Date: 2019-04-01
+// Description: Uses the watchdog timer to reset the system. It is identical launch_reset
+//				except the launch bits are not modified.
+/*========================================================================================*/
+
+void Manual_RESET(){
 	
-	// String Index
-	int i = 0;
+	// Write to EEPROM
+	EEPROM_Write(0xff, 0x0001);
 	
-	// 8 bit mask to check the state of each position
-	uint8_t mask = 0x01;
-	uint8_t new_mask = 0xff;
-	// keep track of the first index
+	/* Watchdog must be reset to ensure the clock starts at 0.
+	/ This is especially important as we are shortening the timeout period
+	*/
 	
-	while(i < 8){
-		if (power[i] == 'y'){
-			power_state[0] |= mask;
-			mask = mask << 1; // shift left once
-		}
-		else{
-			new_mask ^= mask;
-			power_state[0] &= new_mask;
-			mask = mask << 1; // shift left once
-		}
-		i++;
-	}
+	// Watchdog reset
+	wdt_reset();
+	
+	// Set the watchdog to System Reset Mode
+	wdt_enable(SYSTEM_RESET_MODE);
+	
+	// Change the tiemout period to 1.0s			 
+	wdt_set_timeout_period(WDT_TIMEOUT_PERIOD_2KCLK); // timeout set from 1024k to 128k
+	
 }

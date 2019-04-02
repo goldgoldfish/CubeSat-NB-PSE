@@ -17,15 +17,15 @@
 #define OBC_COMM_H_
 
 // Takes commands from OBC and calls the corresponding function
-void commandDecode (char* obc_command, double* telem, uint8_t* mode, uint8_t* power_state, char* power);
+void commandDecode (double* telem, uint8_t* mode, uint8_t* power_state, char* power, uint8_t* newPwrMat, uint8_t state_num);
 
 // Updates all telemetry information regarding voltage, current and temperature
 void Update_TELEM(double* telem, uint8_t power_state);
 
 // Updates the OBC will all telemetry data stored on microcontroller
-void Update_OBC(double* telem, char* power);
+void Update_OBC(double* telem, char* power, uint8_t state_num, uint8_t mode);
 
-// Converts string power state to integer power state
-void Manual_STATE(char* power, uint8_t* power_state);
+// Manual Reset of the EPS Microcontroller (OBC controlled)
+void Manual_RESET();
 
 #endif /* OBC_COMM_H_ */

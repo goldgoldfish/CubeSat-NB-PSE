@@ -165,7 +165,8 @@ float Amp_ADC(int Amp_num){
 
 float Temp_ADC(){
 	int i = 0;
-	float temp;
+	float temp[3];
+	float high; // return the highest temperature for symposium demo
 	
 	// Enable temperature sensor
 	Clear_GPIO(1);
@@ -176,19 +177,19 @@ float Temp_ADC(){
 			Clear_GPIO(4);
 			Set_GPIO(5);
 			Set_GPIO(6);
-			temp += (((Check_ADC(11) / 1024) * 3.3) - 0.6972) / 0.0328;
+			temp[0] = (((Check_ADC(11) / 1024) * 3.3) - 0.6972) / 0.0328;
 		}
 		else if(i == 1){
 			Set_GPIO(4);
 			Set_GPIO(5);
 			Clear_GPIO(6);
-			temp += (((Check_ADC(11) / 1024) * 3.3) - 0.6972) / 0.0328;
+			temp[1] = (((Check_ADC(11) / 1024) * 3.3) - 0.6972) / 0.0328;
 		}
 		else if (i == 2){
 			Set_GPIO(4);
 			Set_GPIO(5);
 			Set_GPIO(6);
-			temp += (((Check_ADC(11) / 1024) * 3.3) - 0.6972) / 0.0328;
+			temp[2] = (((Check_ADC(11) / 1024) * 3.3) - 0.6972) / 0.0328;
 		}
 		else{
 			// do nothing (ADD error message)
@@ -204,8 +205,17 @@ float Temp_ADC(){
 	Clear_GPIO(5);
 	Clear_GPIO(6);
 	
+	i = 1; // start at the second index
+	high = temp[0]; // initialize the highest temperature to the first index
+	while(i < 3){
+		if(temp[i] > high){
+			high = temp[i];
+		}
+		i++;
+	}
+	
 	// Divide temperature measurements by 3 to get an average (To be discussed)
-	return temp/3;
+	return high;
 }
 
 /*========================================================================================*/
@@ -224,7 +234,7 @@ float SoC_ADC(float volt, float amp){
 	
 	
 	// Lookup table
-	if (amp < 0.6 && amp > 0){
+	if (amp < 0.6){
 		if (volt > 4.00) {
 			soc = 80;
 		} //end if

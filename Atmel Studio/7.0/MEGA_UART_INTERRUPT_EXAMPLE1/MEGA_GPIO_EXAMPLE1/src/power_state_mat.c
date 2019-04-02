@@ -12,6 +12,7 @@
 /*========================================================================================*/
 
 #include "power_state_mat.h"
+#include "uart_func.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -195,3 +196,64 @@ void Update_STATE(char* power, uint8_t state){
 	}
 }
 
+/*========================================================================================*/
+// Function: Manual_STATE
+//
+// Author: Chris Thomas
+// Date: 2019-03-27
+// Description: Converts the power state from array of characters to an unsigned integer.
+//				Unsigned integers are used instead of character arrays for speed.
+/*========================================================================================*/
+
+void Manual_STATE(char* power, uint8_t* power_state){
+	
+	// String Index
+	int i = 0;
+	
+	// 8 bit mask to check the state of each position
+	uint8_t mask = 0x01;
+	uint8_t new_mask = 0xff;
+	// keep track of the first index
+	
+	while(i < 8){
+		if (power[i] == 'y'){
+			power_state[0] |= mask;
+			mask = mask << 1; // shift left once
+		}
+		else{
+			new_mask ^= mask;
+			power_state[0] &= new_mask;
+			mask = mask << 1; // shift left once
+		}
+		i++;
+	}
+}
+
+/*========================================================================================*/
+// Function: pwrMatChange
+//
+// Author: Chris Thomas
+// Date: 2019-03-27
+// Description: Converts the power state from array of characters to an unsigned integer.
+/*========================================================================================*/
+
+void pwrMatChange(uint8_t height, uint8_t width, uint8_t* newPwrMat){
+	
+	// Convert dimensions to a single vector
+	uint8_t size = height * width;
+	
+	// Index variable
+	int i = 0;
+	
+	// Char array & uint_8 for new power states
+	char input[9];
+	uint8_t* new_state;
+	
+	// Enter the new power states into the matrix
+	while(i < size){
+		UART0_getstring(input);
+		Manual_STATE(input, new_state);
+		newPwrMat[i] = new_state;
+	}
+	
+}

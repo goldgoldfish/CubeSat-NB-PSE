@@ -215,6 +215,12 @@
     <Compile Include="src\adc_func.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\fault.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\fault.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\launcher.c">
       <SubType>compile</SubType>
     </Compile>

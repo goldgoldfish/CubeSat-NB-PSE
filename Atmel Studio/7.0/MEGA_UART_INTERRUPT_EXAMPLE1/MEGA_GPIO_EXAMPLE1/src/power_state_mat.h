@@ -25,7 +25,10 @@ int PowerStateCheck(float SOC, float temp);
 // Updates the power state to string form for ease of use
 void Update_STATE(char* power, uint8_t state);
 
-// Set Mode of the EPS (Auto/Manual)
-void Set_MODE(uint8_t mode);
+// Converts string power state to integer power state
+void Manual_STATE(char* power, uint8_t* power_state);
+
+// Creates new power matrix
+void pwrMatChange(uint8_t height, uint8_t width, uint8_t* newPwrMat);
 
 #endif /* power_state_mat_H_ */
