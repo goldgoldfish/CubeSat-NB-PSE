@@ -35,16 +35,18 @@
 // Date: 2019-03-17
 // Description: Decodes commands from the OBC and calls their corresponding function.		
 /*========================================================================================*/
-void commandDecode (double* telem, uint8_t* mode, uint8_t* power_state, char* power, uint8_t* newPwrMat, uint8_t state_num){
+void commandDecode (double* telem, uint8_t* mode, uint8_t* power_state,
+					char* power, uint8_t* pwrMat, uint8_t state_num, 
+					uint8_t* edit_num, uint8_t* demo, int soc){
 	
 	// Erase the first echoed letter
 	UART0_putchar('\b'); // ascii code for backspace
 	
 	// List of OBC Commands
 	// OBC Commands
-	char obc_command[8][20] = {"TelemRqt", "SubSysRqt",
+	char obc_command[10][20] = {"TelemRqt", "SubSysRqt",
 							   "PwrMatEdit", "PwrStateRqt", "ModeChange",
-							   "LaunchReset", "HelloCheck", "Reset"};
+							   "LaunchReset", "HelloCheck", "Reset", "Demo"};
 							   
 	// Print list of commands for the user
 	int i = 0; // increment
@@ -55,7 +57,7 @@ void commandDecode (double* telem, uint8_t* mode, uint8_t* power_state, char* po
 	UART0_putchar('\n');
 	UART0_putchar('\r');
 	// print all seven commands
-	while(i < 8){
+	while(i < 9){
 		UART0_putchar(0x31 + i); // the '1' plus the command index
 		UART0_putstring(" -> ");
 		UART0_putstring(obc_command[i]);
@@ -73,7 +75,7 @@ void commandDecode (double* telem, uint8_t* mode, uint8_t* power_state, char* po
 	UART0_putstring("> ");		
 	
 	// Prompt user to try again if incorrect entry
-	int incorrect = 1;	
+	int incorrect = 1;
 	
 	// Check for command in list, if not in list, prompt user again
 	
@@ -99,7 +101,7 @@ void commandDecode (double* telem, uint8_t* mode, uint8_t* power_state, char* po
 			UART0_putchar('\n');
 			UART0_putchar('\r');
 			Update_TELEM(telem, power_state);
-			Update_OBC(telem, power, state_num, mode[0]);
+			Update_OBC(telem, power, state_num, mode[0], soc);
 			//send telem
 		} //end if
 		else if (strcmp(obc_command[com_ind], "SubSysRqt") == 0) {	
@@ -131,22 +133,7 @@ void commandDecode (double* telem, uint8_t* mode, uint8_t* power_state, char* po
 			}
 		} //else if
 		else if (strcmp(obc_command[com_ind], "PwrMatEdit") == 0) {
-			UART0_putstring("Enter the first dimension (rows): ");
-			UART0_putchar('\n');
-			UART0_putchar('\n');
-			UART0_putchar('\r');
-			UART0_putstring("> "); 
-			char dim1 = UART0_getchar();
-			UART0_putchar('\n');
-			UART0_putchar('\n');
-			UART0_putchar('\r'); 
-			UART0_putstring("Enter the second dimension (columns): ");
-			UART0_putchar('\n');
-			UART0_putchar('\n');
-			UART0_putchar('\r');
-			UART0_putstring("> ");
-			char dim2 = UART0_getchar();
-			pwrMatChange(dim1 - 0x30, dim2 - 0x30, newPwrMat);
+			pwrMatEdit(edit_num, power, pwrMat);
 		} //end else if
 		else if (strcmp(obc_command[com_ind], "PwrStateRqt") == 0) {
 			//send the power state matrix cell to the obc
@@ -180,6 +167,9 @@ void commandDecode (double* telem, uint8_t* mode, uint8_t* power_state, char* po
 		} //end else if
 		else if(strcmp(obc_command[com_ind], "Reset") == 0){
 			Manual_RESET(); // Reset the EPS without changing launch state
+		}
+		else if(strcmp(obc_command[com_ind], "Demo") == 0){
+			demo[0] = !demo[0]; // toggle demo mode
 		}
 		else {
 			incorrect = 1;
@@ -239,7 +229,7 @@ void Update_TELEM(double* telem, uint8_t power_state){
 // Description: Updates the telemetry information to the OBC.
 /*========================================================================================*/
 
-void Update_OBC(double* telem, char* power, uint8_t state_num, uint8_t mode){
+void Update_OBC(double* telem, char* power, uint8_t state_num, uint8_t mode, int soc){
 	// Prints a border to the Putty
 	char stars[100] = "/********************************************************************CubeSat EPS"; // left side of border
 	char stars2[100] = "********************************************************************/"; // right side of border
@@ -394,11 +384,28 @@ void Update_OBC(double* telem, char* power, uint8_t state_num, uint8_t mode){
 	UART0_putstring("STATE #");
 	UART0_putchar('\n');
 	UART0_putchar('\r');
-	sprintf(state,"%d",state_num);
+	if(state_num == 'M'){
+		UART0_putchar('M');
+	}
+	else{
+		sprintf(state,"%d",state_num);
+		UART0_putstring(state);
+	}
+	UART0_putchar('\n');
+	UART0_putchar('\n');
+	UART0_putchar('\r');
+	
+	// Print the State of Charge
+	// re-use state from above
+	UART0_putstring("STATE OF CHARGE");
+	UART0_putchar('\n');
+	UART0_putchar('\r');
+	sprintf(state,"%d",soc);
 	UART0_putstring(state);
 	UART0_putchar('\n');
 	UART0_putchar('\n');
 	UART0_putchar('\r');
+	
 	
 	// Print the mode of operation (auto/manual)
 	UART0_putstring("MODE");

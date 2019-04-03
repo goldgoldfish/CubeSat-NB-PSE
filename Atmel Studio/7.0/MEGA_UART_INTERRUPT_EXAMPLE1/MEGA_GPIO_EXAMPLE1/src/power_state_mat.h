@@ -28,7 +28,10 @@ void Update_STATE(char* power, uint8_t state);
 // Converts string power state to integer power state
 void Manual_STATE(char* power, uint8_t* power_state);
 
-// Creates new power matrix
-void pwrMatChange(uint8_t height, uint8_t width, uint8_t* newPwrMat);
+// Changes the specified power state in the power state matrix
+void pwrMatChange(uint8_t* edit_num, char* power, uint8_t* pwrMat);
+
+// Prompts the user for the required information to change the specified power state
+void pwrMatEdit(uint8_t* edit_num , char* power, uint8_t* pwrMat);
 
 #endif /* power_state_mat_H_ */

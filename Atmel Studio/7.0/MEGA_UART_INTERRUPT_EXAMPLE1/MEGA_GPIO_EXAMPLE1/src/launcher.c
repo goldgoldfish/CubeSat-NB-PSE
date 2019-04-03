@@ -123,7 +123,7 @@ void launch_reset(){
 	// Set the watchdog to System Reset Mode
 	wdt_enable(SYSTEM_RESET_MODE);
 	
-	// Change the tiemout period to 1.0s			 
+	// Change the tiemout period to 16ms			 
 	wdt_set_timeout_period(WDT_TIMEOUT_PERIOD_2KCLK); // timeout set from 1024k to 128k
 	
 }

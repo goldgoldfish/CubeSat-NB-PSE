@@ -36,7 +36,7 @@ void pwrMatInit(uint8_t* pwrMat){
 	pwrMat[4] = 0b00000000;
 	pwrMat[5] = 0b00000000;
 	pwrMat[6] = 0b00000100;
-	pwrMat[7] = 0b00001010;
+	pwrMat[7] = 0b00001000;
 	pwrMat[8] = 0b00001000;
 	pwrMat[9] = 0b00001000;
 	pwrMat[10] = 0b00011100;
@@ -237,23 +237,62 @@ void Manual_STATE(char* power, uint8_t* power_state){
 // Description: Converts the power state from array of characters to an unsigned integer.
 /*========================================================================================*/
 
-void pwrMatChange(uint8_t height, uint8_t width, uint8_t* newPwrMat){
+void pwrMatChange(uint8_t* edit_num, char* power, uint8_t* pwrMat){
 	
-	// Convert dimensions to a single vector
-	uint8_t size = height * width;
-	
-	// Index variable
+	// String Index
 	int i = 0;
 	
-	// Char array & uint_8 for new power states
-	char input[9];
-	uint8_t* new_state;
+	// 8 bit mask to check the state of each position
+	uint8_t mask = 0x01;
+	uint8_t new_mask = 0xff;
+	// keep track of the first index
 	
-	// Enter the new power states into the matrix
-	while(i < size){
-		UART0_getstring(input);
-		Manual_STATE(input, new_state);
-		newPwrMat[i] = new_state;
+	while(i < 8){
+		if (power[i] == 'y'){
+			pwrMat[edit_num[0]] |= mask;
+			mask = mask << 1; // shift left once
+		}
+		else{
+			new_mask ^= mask;
+			pwrMat[edit_num[0]] &= new_mask;
+			mask = mask << 1; // shift left once
+		}
+		i++;
 	}
 	
+}
+
+/*========================================================================================*/
+// Function: pwrMatEdit
+//
+// Author: Chris Thomas
+// Date: 2019-03-27
+// Description: Changes the power state in the power state matrix and prints the 
+//				associated input prompts.
+/*========================================================================================*/
+
+void pwrMatEdit(uint8_t* edit_num , char* power, uint8_t* pwrMat){
+	
+	// Get user input
+	edit_num[0] = 0;
+	UART0_putstring("Enter the power state number to be changed");
+	UART0_putchar('\n');
+	UART0_putchar('\n');
+	UART0_putchar('\r');
+	UART0_putstring("> ");
+	edit_num[0] += (UART0_getchar() - 0x30) * 10; // multiply first digit
+	edit_num[0] += UART0_getchar() - 0x30; // do nothing to last digit
+	UART0_putchar('\n');
+	UART0_putchar('\n');
+	UART0_putchar('\r');
+	UART0_putstring("Enter the new state in character form (y/n): ");
+	UART0_putchar('\n');
+	UART0_putchar('\n');
+	UART0_putchar('\r');
+	UART0_putstring("> ");
+	UART0_getstring(power); // get the new state in string form
+	pwrMatChange(edit_num, power, pwrMat);
+	UART0_putchar('\n');
+	UART0_putchar('\n');
+	UART0_putchar('\r');
 }

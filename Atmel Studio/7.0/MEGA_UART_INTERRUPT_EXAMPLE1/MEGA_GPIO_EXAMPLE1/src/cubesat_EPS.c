@@ -42,9 +42,6 @@
 // Description: Defining Parameters and Variables
 /*========================================================================================*/
 
-
-// POST Launch Bits
-
 // Telemetry information storage
 double telem[12];
 char power[9];
@@ -60,9 +57,7 @@ float prev_temp = 0;
 // Power State matrix
 uint8_t pwrMat[25];
 int state_num = 0;
-
-// New Power Matrix
-char newPwrMat[5];
+uint8_t edit_num[1] = {0};
 
 // Power State
 uint8_t power_state[1] = {0};
@@ -73,11 +68,17 @@ uint8_t watchdog = 0;
 
 // UART Interrupt stuff
 char fake;
-uint8_t mode[1] = {1}; // assumes autonomous mode
 
-uint8_t launch = 0x00;
-uint8_t check = 0x01;
-uint8_t sum_check = 0x00;
+// Modes
+uint8_t mode[1] = {1}; // assumes autonomous mode
+uint8_t demo[1] = {0}; // assumes regular operation
+
+// Start of demo variable
+uint8_t demo_start = 1;
+
+//uint8_t launch = 0x00;
+//uint8_t check = 0x01;
+//uint8_t sum_check = 0x00;
 
 /*========================================================================================*/
 // Function: Timer Interrupt
@@ -98,21 +99,60 @@ ISR(TIMER1_COMPA_vect){
 	
 	// Check Power State
 	temp = telem[11];
-	soc = SoC_ADC(telem[10],telem[4]);
 	
-	if(mode[0]){
+	if(mode[0] && !demo[0]){
+		// Check state of charge
+		soc = SoC_ADC(telem[10],telem[4]);
 		// Update power state
 		state_num = PowerStateCheck(soc, temp);
 		power_state[0] = pwrMat[state_num];
 		// Update the state of the loads
-		Update_STATE(power, power_state[0]);
 		Update_LOADS(power_state[0], power_state);
-		Update_OBC(telem, power, state_num, mode[0]);
+		Update_STATE(power, power_state[0]);
+		Update_OBC(telem, power, state_num, mode[0], soc);
+	}
+	else if(demo[0] && mode[0]){
+		if(demo_start){
+			UART0_putstring("The demo has started.");
+			UART0_putchar('\n');
+			UART0_putchar('\n');
+			UART0_putchar('\r');
+			// Speed up the interrupt for the demo
+			OCR1A = 0x3f;
+			state_num = 22;
+			soc = 90;
+		}
+		demo_start = 0; // demo initialization is done
+		power_state[0] = pwrMat[state_num]; // update power state
+		// Update the rest of the system to simulate the changes
+		Update_LOADS(power_state[0], power_state);
+		Update_STATE(power, power_state[0]);
+		Update_OBC(telem, power, state_num, mode[0], soc);
+		// Reset the demo variables
+		if(soc < 20){
+			// Return to regular interrupt speed
+			OCR1A = 0xff;
+			// Reset the demo variable
+			demo_start = 1;
+			// Return to regular operation
+			demo[0] = 0;
+			// Update the OBC that the demo is over
+			UART0_putstring("The demo is complete.");
+			UART0_putchar('\n');
+			UART0_putchar('\n');
+			UART0_putchar('\r');
+		}
+		// Force the state of charge to change
+		soc -= 20; // decrement the state of charge
+		state_num -= 5; // decrement state number by 5 to switch loads
 	}
 	else{
-		Update_STATE(power, power_state[0]);
+		// Check state of charge
+		soc = SoC_ADC(telem[10],telem[4]);
+		state_num = 'M'; // stands for manual mode
 		Update_LOADS(power_state[0], power_state);
-		Update_OBC(telem, power, state_num, mode[0]);
+		Update_STATE(power, power_state[0]);
+		Update_OBC(telem, power, state_num, mode[0], soc);
 	}
 
 	// Update OBC with newly acquired info
@@ -137,7 +177,7 @@ ISR(USART0_RX_vect){
 	//wdt_disable();
 	
 	fake = UART0_getchar();
-	commandDecode(telem, mode, power_state, power, newPwrMat, state_num);
+	commandDecode(telem, mode, power_state, power, pwrMat, state_num, edit_num, demo, soc);
 	
 	//wdt_enable(INTERRUPT_SYSTEM_RESET_MODE);
 	
