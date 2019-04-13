@@ -44,8 +44,8 @@ void commandDecode (double* telem, uint8_t* mode, uint8_t* power_state,
 	
 	// List of OBC Commands
 	// OBC Commands
-	char obc_command[10][20] = {"TelemRqt", "SubSysRqt",
-							   "PwrMatEdit", "PwrStateRqt", "ModeChange",
+	char obc_command[9][20] = {"TelemRqt", "SubSysRqt",
+							   "PwrMatEdit", "ModeChange",
 							   "LaunchReset", "HelloCheck", "Reset", "Demo"};
 							   
 	// Print list of commands for the user
@@ -57,7 +57,7 @@ void commandDecode (double* telem, uint8_t* mode, uint8_t* power_state,
 	UART0_putchar('\n');
 	UART0_putchar('\r');
 	// print all seven commands
-	while(i < 9){
+	while(i < 8){
 		UART0_putchar(0x31 + i); // the '1' plus the command index
 		UART0_putstring(" -> ");
 		UART0_putstring(obc_command[i]);
@@ -125,7 +125,7 @@ void commandDecode (double* telem, uint8_t* mode, uint8_t* power_state,
 				UART0_putchar('\n');
 				UART0_putchar('\n');
 				UART0_putchar('\r');
-				UART0_putstring("Select ModeChange [5] before attempting to change the power state.");
+				UART0_putstring("Select ModeChange [4] before attempting to change the power state.");
 				UART0_putchar('\n');
 				UART0_putchar('\n');
 				UART0_putchar('\r');
@@ -134,9 +134,6 @@ void commandDecode (double* telem, uint8_t* mode, uint8_t* power_state,
 		} //else if
 		else if (strcmp(obc_command[com_ind], "PwrMatEdit") == 0) {
 			pwrMatEdit(edit_num, power, pwrMat);
-		} //end else if
-		else if (strcmp(obc_command[com_ind], "PwrStateRqt") == 0) {
-			//send the power state matrix cell to the obc
 		} //end else if
 		else if (strcmp(obc_command[com_ind], "ModeChange") == 0) {
 			// The character 0 must be sent to go into manual mode
